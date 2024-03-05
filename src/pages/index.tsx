@@ -24,9 +24,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
+
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "@/validators/auth";
@@ -39,6 +41,9 @@ type RegisterType = z.infer<typeof registerSchema>;
 
 export default function Home() {
   const [step, setStep] = useState<number>(0);
+
+  const { toast } = useToast();
+
   const form = useForm<RegisterType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -57,7 +62,8 @@ export default function Home() {
       toast({
         title: "비밀번호가 일치하지 않습니다.",
         variant: "destructive",
-        duration: 1000,
+        description: "비밀번호를 다시 입력하시겠습니까?",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
       return;
     }
@@ -89,7 +95,7 @@ export default function Home() {
                     <FormItem>
                       <FormLabel>이름</FormLabel>
                       <FormControl>
-                        <Input placeholder="이름을 입력하세요." {...field} />
+                        <Input placeholder="이름을 입력하세요" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -102,7 +108,7 @@ export default function Home() {
                     <FormItem>
                       <FormLabel>이메일</FormLabel>
                       <FormControl>
-                        <Input placeholder="이메일을 입력하세요." {...field} />
+                        <Input placeholder="이메일을 입력하세요" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -115,7 +121,7 @@ export default function Home() {
                     <FormItem>
                       <FormLabel>연락처</FormLabel>
                       <FormControl>
-                        <Input placeholder="연락처를 입력하세요." {...field} />
+                        <Input placeholder="연락처를 입력하세요" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
