@@ -6,7 +6,7 @@ const passwordRegex =
 const phoneRegex = /^010\d{8}$/;
 
 export const registerSchema = z.object({
-  email: z.string().email({ message: "올바른 이메일을 입력해주세요." }),
+  email: z.string().email({ message: "이메일 형식에 맞춰 입력해주세요." }),
   phone: z
     .string()
     .min(11, "연락처는 11자리여야 합니다.")

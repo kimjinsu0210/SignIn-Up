@@ -56,7 +56,7 @@ export default function Home() {
     },
   });
 
-  function onSubmit(data: RegisterType) {
+  const onSubmit = (data: RegisterType) => {
     const { password, confirmPassword } = data;
     if (password !== confirmPassword) {
       toast({
@@ -68,8 +68,28 @@ export default function Home() {
       return;
     }
     alert(JSON.stringify(data, null, 4));
-  }
+  };
+  const formValidationHandler = () => {
+    form.trigger(["username", "email", "phone", "role"]);
+    const usernameState = form.getFieldState("username");
+    const emailState = form.getFieldState("email");
+    const phoneState = form.getFieldState("phone");
+    const roleState = form.getFieldState("role");
 
+    if (!usernameState.isDirty || usernameState.invalid) return;
+    if (!emailState.isDirty || emailState.invalid) return;
+    if (!phoneState.isDirty || phoneState.invalid) return;
+    if (!roleState.isDirty || roleState.invalid) return;
+
+    setStep(1);
+  };
+  const pasteHandler = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    toast({
+      title: "붙여넣기를 할 수 없습니다.",
+      variant: "destructive",
+    });
+  };
   return (
     <Layout>
       <Card className={cn("w-[400px]")}>
@@ -180,7 +200,11 @@ export default function Home() {
                     <FormItem>
                       <FormLabel>비밀번호 확인</FormLabel>
                       <FormControl>
-                        <Input type={"password"} {...field} />
+                        <Input
+                          type={"password"}
+                          {...field}
+                          onPaste={(event) => pasteHandler(event)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,22 +216,9 @@ export default function Home() {
                   계정 등록하기
                 </Button>
                 <Button
-                  type="button"
+                  type="submit"
                   className={cn({ hidden: step === 1 })}
-                  onClick={() => {
-                    form.trigger(["phone", "email", "username", "role"]);
-                    const phoneState = form.getFieldState("phone");
-                    const emailState = form.getFieldState("email");
-                    const usernameState = form.getFieldState("username");
-                    const roleState = form.getFieldState("role");
-
-                    if (!phoneState.isDirty || phoneState.invalid) return;
-                    if (!emailState.isDirty || emailState.invalid) return;
-                    if (!usernameState.isDirty || usernameState.invalid) return;
-                    if (!roleState.isDirty || roleState.invalid) return;
-
-                    setStep(1);
-                  }}
+                  onClick={formValidationHandler}
                 >
                   다음 단계로
                   <ArrowRight className="w-4 h-4 ml-2" />
