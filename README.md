@@ -14,7 +14,7 @@ React-hook-form과 Zod 라이브러리를 이용해서 설계했습니다.
 ## 기술 스택
 
 <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=white">
-<img src="https://img.shields.io/badge/Next.js-14.1.1-white?style=for-the-badge&logo=next.js&logoColor=black">
+<img src="https://img.shields.io/badge/Next.js-14.1.1-black?style=for-the-badge&logo=next.js&logoColor=black">
 <img src="https://img.shields.io/badge/React%20Hook%20Form-FFC0CB?style=for-the-badge&logo=react&logoColor=black">
 <img src="https://img.shields.io/badge/reactrouter-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white">
 
