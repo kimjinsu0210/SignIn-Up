@@ -35,7 +35,7 @@ import { registerSchema } from "@/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, RocketIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
 
@@ -45,6 +45,7 @@ const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
   const { toast } = useToast();
   const router = useRouter();
+  const Swal = require("sweetalert2");
 
   const form = useForm<RegisterType>({
     resolver: zodResolver(registerSchema),
@@ -66,13 +67,13 @@ const SignUpForm = () => {
       toast({
         title: "비밀번호가 일치하지 않습니다.",
         variant: "destructive",
-        description: "비밀번호를 다시 입력하시겠습니까?",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
+        action: <ToastAction altText="Try again">다시 입력</ToastAction>,
       });
       return;
     }
-    alert(JSON.stringify(data, null, 4));
+    Swal.fire("회원 정보", JSON.stringify(data, null, 4));
   };
+
   const formValidationHandler = () => {
     form.trigger(["username", "email", "phone", "role", "gender"]);
     const usernameState = form.getFieldState("username");
@@ -89,6 +90,7 @@ const SignUpForm = () => {
 
     setStep(1);
   };
+
   const pasteHandler = (event: React.ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     toast({
@@ -96,6 +98,7 @@ const SignUpForm = () => {
       variant: "destructive",
     });
   };
+
   return (
     <Layout>
       <Card className={cn("w-[400px]")}>

@@ -39,16 +39,15 @@ export const SignInForm = () => {
       confirmPassword: "",
     },
   });
+  console.log("form :", form);
+
   const onSubmit = (data: RegisterInput) => {
-    const { password, confirmPassword } = data;
-    if (password !== confirmPassword) {
-      toast({
-        title: "비밀번호가 일치하지 않습니다.",
-        variant: "destructive",
-        duration: 1000,
-      });
-      return;
-    }
+    console.log("data :", data);
+    toast({
+      title: "비밀번호가 일치하지 않습니다.",
+      variant: "destructive",
+      duration: 1000,
+    });
     alert(JSON.stringify(data, null, 4));
   };
 
@@ -69,9 +68,12 @@ export const SignInForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>이메일</FormLabel>
+                  <FormLabel>아이디</FormLabel>
                   <FormControl>
-                    <Input placeholder="이메일을 입력하세요" {...field} />
+                    <Input
+                      placeholder="이메일 형식으로 입력해주세요"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
