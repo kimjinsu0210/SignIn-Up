@@ -38,8 +38,8 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
-import { collection, getDocs } from "firebase/firestore";
 import { db } from "../api/firebaseSDK";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -47,7 +47,6 @@ const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
   const { toast } = useToast();
   const router = useRouter();
-  const Swal = require("sweetalert2");
 
   const form = useForm<RegisterType>({
     resolver: zodResolver(registerSchema),
@@ -64,9 +63,8 @@ const SignUpForm = () => {
       confirmPassword: "",
     },
   });
-  // console.log("form :", form.watch());
 
-  const onSubmit = (data: RegisterType) => {
+  const onSubmit = async (data: RegisterType) => {
     const { password, confirmPassword } = data;
     if (password !== confirmPassword) {
       toast({
@@ -76,7 +74,19 @@ const SignUpForm = () => {
       });
       return;
     }
-    Swal.fire("회원 정보", JSON.stringify(data, null, 4));
+    try {
+      await addDoc(collection(db, "users"), {
+        username: data.username,
+        email: data.email,
+        phone: data.phone,
+        birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
+        gender: data.gender,
+        role: data.role,
+      });
+      alert("회원가입완료");
+    } catch (error) {
+      console.error("Error Code", error);
+    }
   };
 
   const formValidationHandler = () => {
@@ -118,20 +128,6 @@ const SignUpForm = () => {
       variant: "destructive",
     });
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "user"));
-        querySnapshot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data());
-        });
-      } catch (e) {
-        console.error("Error fetching documents: ", e);
-      }
-    };
-    fetchData();
-  }, []);
 
   return (
     <Layout>
