@@ -20,7 +20,10 @@ export const registerSchema = z.object({
     .min(2, { message: "이름은 2글자 이상이어야 합니다." })
     .max(100, { message: "이름은 100글자 이하이어야 합니다." }),
   role: z.string().min(2, { message: "역할을 선택해주세요." }),
-  gender: z.string().min(2, { message: "성별을 체크해주세요." }),
+  gender: z.string().min(1, { message: "성별을 체크해주세요." }),
+  birthYear: z.string().min(1, { message: "년을 선택해주세요" }),
+  birthMonth: z.string().min(1, { message: "월을 선택해주세요" }),
+  birthDay: z.string().min(1, { message: "일을 선택해주세요" }),
   password: z
     .string()
     .min(6, "비밀번호는 최소 6자리 이상이어야 합니다.")

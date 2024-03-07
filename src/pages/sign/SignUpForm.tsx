@@ -35,7 +35,7 @@ import { registerSchema } from "@/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import { ArrowRight, RocketIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
 
@@ -54,12 +54,15 @@ const SignUpForm = () => {
       email: "",
       phone: "",
       role: "",
+      birthYear: "",
+      birthMonth: "",
+      birthDay: "",
       gender: "",
       password: "",
       confirmPassword: "",
     },
   });
-  console.log("form :", form.watch());
+  // console.log("form :", form.watch());
 
   const onSubmit = (data: RegisterType) => {
     const { password, confirmPassword } = data;
@@ -75,18 +78,33 @@ const SignUpForm = () => {
   };
 
   const formValidationHandler = () => {
-    form.trigger(["username", "email", "phone", "role", "gender"]);
+    form.trigger([
+      "username",
+      "email",
+      "phone",
+      "role",
+      "gender",
+      "birthYear",
+      "birthMonth",
+      "birthDay",
+    ]);
     const usernameState = form.getFieldState("username");
     const emailState = form.getFieldState("email");
     const phoneState = form.getFieldState("phone");
     const roleState = form.getFieldState("role");
     const genderState = form.getFieldState("gender");
+    const birthYearState = form.getFieldState("birthYear");
+    const birthMonthState = form.getFieldState("birthMonth");
+    const birthDayState = form.getFieldState("birthDay");
 
     if (!usernameState.isDirty || usernameState.invalid) return;
     if (!emailState.isDirty || emailState.invalid) return;
     if (!phoneState.isDirty || phoneState.invalid) return;
     if (!roleState.isDirty || roleState.invalid) return;
     if (!genderState.isDirty || genderState.invalid) return;
+    if (!birthYearState.isDirty || birthYearState.invalid) return;
+    if (!birthMonthState.isDirty || birthMonthState.invalid) return;
+    if (!birthDayState.isDirty || birthDayState.invalid) return;
 
     setStep(1);
   };
@@ -186,6 +204,96 @@ const SignUpForm = () => {
                     </FormItem>
                   )}
                 />
+                <div className="flex gap-5">
+                  <FormField
+                    control={form.control}
+                    name="birthYear"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>생년</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="생년" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Array.from(
+                              { length: 114 },
+                              (_, i) => 2024 - i
+                            ).map((year) => (
+                              <SelectItem key={year} value={String(year)}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="birthMonth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>월</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="월" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                              (month) => (
+                                <SelectItem key={month} value={String(month)}>
+                                  {String(month)}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="birthDay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>일</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="일" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                              (day) => (
+                                <SelectItem key={day} value={String(day)}>
+                                  {day}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="role"
