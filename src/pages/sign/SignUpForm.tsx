@@ -34,10 +34,12 @@ import { useForm } from "react-hook-form";
 import { registerSchema } from "@/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../api/firebaseSDK";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -116,6 +118,20 @@ const SignUpForm = () => {
       variant: "destructive",
     });
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "user"));
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id, " => ", doc.data());
+        });
+      } catch (e) {
+        console.error("Error fetching documents: ", e);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <Layout>
