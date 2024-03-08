@@ -8,15 +8,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "@/pages/api/firebaseSDK";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export function ModeToggle({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const [loginState, setLoginState] = useState<boolean>(false);
   const { setTheme } = useTheme();
+  const router = useRouter();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) setLoginState(true);
+    });
+  }, [router]);
 
   return (
     <div className={className} {...props}>
+      {loginState && (
+        <Button
+          onClick={async () => {
+            await signOut(auth);
+            setLoginState(false);
+          }}
+          variant="outline"
+        >
+          로그아웃
+        </Button>
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon">

@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
         <Toaster />
       </div>
-      <ModeToggle className={"absolute top-6 right-6"} />
+      <ModeToggle className={"absolute top-6 right-6 flex gap-3"} />
     </ThemeProvider>
   );
 }
