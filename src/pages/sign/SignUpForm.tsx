@@ -38,8 +38,9 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
-import { db } from "../api/firebaseSDK";
+import { auth, db } from "../api/firebaseSDK";
 import { addDoc, collection, getDocs } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -74,19 +75,33 @@ const SignUpForm = () => {
       });
       return;
     }
-    try {
-      await addDoc(collection(db, "users"), {
-        username: data.username,
-        email: data.email,
-        phone: data.phone,
-        birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
-        gender: data.gender,
-        role: data.role,
+    //auth 및 firestore 생성
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then(async () => {
+        await addDoc(collection(db, "users"), {
+          username: data.username,
+          email: data.email,
+          phone: data.phone,
+          birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
+          gender: data.gender,
+          role: data.role,
+        });
+        toast({
+          title: "회원가입 완료",
+        });
+      })
+      .catch((error) => {
+        //auth 유효성 검사
+        const errorCode = error.code;
+        console.log("errorCode :", errorCode);
+        if (errorCode === "auth/email-already-in-use") {
+          toast({
+            title: "이미 존재하는 회원입니다.",
+            variant: "destructive",
+            action: <ToastAction altText="Try again">다시 입력</ToastAction>,
+          });
+        }
       });
-      alert("회원가입완료");
-    } catch (error) {
-      console.error("Error Code", error);
-    }
   };
 
   const formValidationHandler = () => {
