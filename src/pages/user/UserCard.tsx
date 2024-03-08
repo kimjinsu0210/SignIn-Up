@@ -8,9 +8,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Layout } from "@/components/layout/Layout";
-import { auth } from "../api/firebaseSDK";
+import { auth, db } from "../api/firebaseSDK";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
+import { collection, getDocs } from "firebase/firestore";
 
 const UserCard = () => {
   const router = useRouter();
@@ -19,6 +20,14 @@ const UserCard = () => {
     onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
     });
+    const fetchData = async () => {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+      });
+    };
+    fetchData();
   }, [router]);
 
   return (

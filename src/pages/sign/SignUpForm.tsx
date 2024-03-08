@@ -46,18 +46,10 @@ import {
 } from "firebase/auth";
 
 type RegisterType = z.infer<typeof registerSchema>;
-type UserInfoType =
-  | "email"
-  | "phone"
-  | "username"
-  | "role"
-  | "gender"
-  | "birthYear"
-  | "birthMonth"
-  | "birthDay";
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
+  console.log("step :", step);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -85,7 +77,10 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: RegisterType) => {
     const { password, confirmPassword } = data;
+    console.log("1");
+
     if (password !== confirmPassword) {
+      console.log("2");
       toast({
         title: "비밀번호가 일치하지 않습니다.",
         variant: "destructive",
@@ -96,6 +91,7 @@ const SignUpForm = () => {
     //auth 및 firestore 생성
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async () => {
+        console.log("3");
         await addDoc(collection(db, "users"), {
           username: data.username,
           email: data.email,
@@ -110,8 +106,8 @@ const SignUpForm = () => {
       })
       .catch((error) => {
         //auth 유효성 검사
+        console.log("4");
         const errorCode = error.code;
-        console.log("errorCode :", errorCode);
         if (errorCode === "auth/email-already-in-use") {
           toast({
             title: "이미 존재하는 회원입니다.",
@@ -123,25 +119,37 @@ const SignUpForm = () => {
   };
 
   const formValidationHandler = () => {
-    const userInfo: UserInfoType[] = [
-      "username",
-      "email",
+    form.trigger([
       "phone",
+      "email",
+      "username",
       "role",
       "gender",
       "birthYear",
       "birthMonth",
       "birthDay",
-    ];
+    ]),
+      () => {
+        const phoneState = form.getFieldState("phone");
+        const emailState = form.getFieldState("email");
+        const usernameState = form.getFieldState("username");
+        const roleState = form.getFieldState("role");
+        const genderState = form.getFieldState("gender");
+        const birthYearState = form.getFieldState("birthYear");
+        const birthMonthState = form.getFieldState("birthMonth");
+        const birthDayState = form.getFieldState("birthDay");
 
-    form.trigger(userInfo);
+        if (!phoneState.isDirty || phoneState.invalid) return;
+        if (!emailState.isDirty || emailState.invalid) return;
+        if (!usernameState.isDirty || usernameState.invalid) return;
+        if (!roleState.isDirty || roleState.invalid) return;
+        if (!genderState.isDirty || genderState.invalid) return;
+        if (!birthYearState.isDirty || birthYearState.invalid) return;
+        if (!birthMonthState.isDirty || birthMonthState.invalid) return;
+        if (!birthDayState.isDirty || birthDayState.invalid) return;
 
-    for (const userInfoField of userInfo) {
-      const fieldState = form.getFieldState(userInfoField);
-      if (!fieldState.isDirty || fieldState.invalid) return;
-    }
-
-    setStep(1);
+        setStep(1);
+      };
   };
 
   const pasteHandler = (event: React.ClipboardEvent<HTMLInputElement>) => {
