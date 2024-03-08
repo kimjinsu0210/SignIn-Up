@@ -15,47 +15,59 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/validators/auth";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "../../components/ui/button";
 import { useRouter } from "next/router";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../api/firebaseSDK";
+import { ToastAction } from "@/components/ui/toast";
 
-type RegisterInput = z.infer<typeof registerSchema>;
+type RegisterType = z.infer<typeof registerSchema>;
 
 export const SignInForm = () => {
   const { toast } = useToast();
   const router = useRouter();
-  const form = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      phone: "",
-      email: "",
-      role: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-  console.log("form :", form);
+  const form = useForm<RegisterType>();
+  console.log("form :", form.watch());
 
-  const onSubmit = (data: RegisterInput) => {
-    console.log("data :", data);
-    toast({
-      title: "비밀번호가 일치하지 않습니다.",
-      variant: "destructive",
-      duration: 1000,
-    });
-    alert(JSON.stringify(data, null, 4));
+  const onSubmit = (data: RegisterType) => {
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((userCredential) => {
+        toast({
+          title: "로그인이 완료되었습니다",
+        });
+        // Signed in
+        const user = userCredential.user;
+        console.log("user :", user);
+        router.push("./sign/MyPage");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        console.log("errorCode :", errorCode);
+        const toastMessage: { [key: string]: string } = {
+          "auth/invalid-credential": "이메일이나 비밀번호가 올바르지 않습니다.",
+          "auth/missing-email": "이메일을 입력해 주세요.",
+          "auth/invalid-email": "이메일 형식이 올바르지 않습니다.",
+          "auth/missing-password": "비밀번호를 입력해 주세요.",
+        };
+        const errorMessage = toastMessage[errorCode];
+        if (errorMessage) {
+          toast({
+            title: errorMessage,
+            variant: "destructive",
+            action: <ToastAction altText="Try again">다시 입력</ToastAction>,
+          });
+        }
+      });
   };
 
   return (
     <Card className={cn("w-[400px]")}>
       <CardHeader>
         <CardTitle>로그인</CardTitle>
-        <CardDescription>필수 정보를 입력해주세요.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -93,7 +105,6 @@ export const SignInForm = () => {
                 </FormItem>
               )}
             />
-
             <div className={"flex justify-between gap-2"}>
               <Button type="submit">로그인</Button>
               <Button

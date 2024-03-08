@@ -43,6 +43,15 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 type RegisterType = z.infer<typeof registerSchema>;
+type UserInfoType =
+  | "email"
+  | "phone"
+  | "username"
+  | "role"
+  | "gender"
+  | "birthYear"
+  | "birthMonth"
+  | "birthDay";
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
@@ -105,7 +114,7 @@ const SignUpForm = () => {
   };
 
   const formValidationHandler = () => {
-    form.trigger([
+    const userInfo: UserInfoType[] = [
       "username",
       "email",
       "phone",
@@ -114,24 +123,14 @@ const SignUpForm = () => {
       "birthYear",
       "birthMonth",
       "birthDay",
-    ]);
-    const usernameState = form.getFieldState("username");
-    const emailState = form.getFieldState("email");
-    const phoneState = form.getFieldState("phone");
-    const roleState = form.getFieldState("role");
-    const genderState = form.getFieldState("gender");
-    const birthYearState = form.getFieldState("birthYear");
-    const birthMonthState = form.getFieldState("birthMonth");
-    const birthDayState = form.getFieldState("birthDay");
+    ];
 
-    if (!usernameState.isDirty || usernameState.invalid) return;
-    if (!emailState.isDirty || emailState.invalid) return;
-    if (!phoneState.isDirty || phoneState.invalid) return;
-    if (!roleState.isDirty || roleState.invalid) return;
-    if (!genderState.isDirty || genderState.invalid) return;
-    if (!birthYearState.isDirty || birthYearState.invalid) return;
-    if (!birthMonthState.isDirty || birthMonthState.invalid) return;
-    if (!birthDayState.isDirty || birthDayState.invalid) return;
+    form.trigger(userInfo);
+
+    for (const userInfoField of userInfo) {
+      const fieldState = form.getFieldState(userInfoField);
+      if (!fieldState.isDirty || fieldState.invalid) return;
+    }
 
     setStep(1);
   };
