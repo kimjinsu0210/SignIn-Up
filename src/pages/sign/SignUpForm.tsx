@@ -119,17 +119,18 @@ const SignUpForm = () => {
   };
 
   const formValidationHandler = () => {
-    form.trigger([
-      "phone",
-      "email",
-      "username",
-      "role",
-      "gender",
-      "birthYear",
-      "birthMonth",
-      "birthDay",
-    ]),
-      () => {
+    form
+      .trigger([
+        "phone",
+        "email",
+        "username",
+        "role",
+        "gender",
+        "birthYear",
+        "birthMonth",
+        "birthDay",
+      ])
+      .then(() => {
         const phoneState = form.getFieldState("phone");
         const emailState = form.getFieldState("email");
         const usernameState = form.getFieldState("username");
@@ -149,7 +150,7 @@ const SignUpForm = () => {
         if (!birthDayState.isDirty || birthDayState.invalid) return;
 
         setStep(1);
-      };
+      });
   };
 
   const pasteHandler = (event: React.ClipboardEvent<HTMLInputElement>) => {
