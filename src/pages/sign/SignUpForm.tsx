@@ -40,7 +40,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
 import { auth, db } from "../api/firebaseSDK";
 import { addDoc, collection, getDocs } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 type RegisterType = z.infer<typeof registerSchema>;
 type UserInfoType =
@@ -57,6 +60,12 @@ const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) router.push("../user/UserCard");
+    });
+  }, [router]);
 
   const form = useForm<RegisterType>({
     resolver: zodResolver(registerSchema),

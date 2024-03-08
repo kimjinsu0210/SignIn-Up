@@ -21,19 +21,31 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "../../components/ui/button";
 import { useRouter } from "next/router";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../api/firebaseSDK";
-import { ToastAction } from "@/components/ui/toast";
+import { useEffect } from "react";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
 export const SignInForm = () => {
   const { toast } = useToast();
   const router = useRouter();
-  const form = useForm<RegisterType>();
-  console.log("form :", form.watch());
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) router.push("./user/UserCard");
+    });
+  }, [router]);
+
+  const form = useForm<RegisterType>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   const onSubmit = (data: RegisterType) => {
+    console.log("data :", data);
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         toast({
@@ -42,7 +54,7 @@ export const SignInForm = () => {
         // Signed in
         const user = userCredential.user;
         console.log("user :", user);
-        router.push("./sign/MyPage");
+        router.push("./user/UserCard");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -58,7 +70,6 @@ export const SignInForm = () => {
           toast({
             title: errorMessage,
             variant: "destructive",
-            action: <ToastAction altText="Try again">다시 입력</ToastAction>,
           });
         }
       });
