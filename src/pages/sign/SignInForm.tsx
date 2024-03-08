@@ -27,7 +27,7 @@ import { useEffect } from "react";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
-export const SignInForm = () => {
+const SignInForm = () => {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -129,3 +129,5 @@ export const SignInForm = () => {
     </Card>
   );
 };
+
+export default SignInForm;
