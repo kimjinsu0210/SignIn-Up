@@ -113,39 +113,37 @@ const SignUpForm = () => {
       });
   };
 
-  const formValidationHandler = () => {
-    form
-      .trigger([
-        "phone",
-        "email",
-        "username",
-        "role",
-        "gender",
-        "birthYear",
-        "birthMonth",
-        "birthDay",
-      ])
-      .then(() => {
-        const phoneState = form.getFieldState("phone");
-        const emailState = form.getFieldState("email");
-        const usernameState = form.getFieldState("username");
-        const roleState = form.getFieldState("role");
-        const genderState = form.getFieldState("gender");
-        const birthYearState = form.getFieldState("birthYear");
-        const birthMonthState = form.getFieldState("birthMonth");
-        const birthDayState = form.getFieldState("birthDay");
+  const formValidationHandler = async () => {
+    await form.trigger([
+      "phone",
+      "email",
+      "username",
+      "role",
+      "gender",
+      "birthYear",
+      "birthMonth",
+      "birthDay",
+    ]);
 
-        if (!phoneState.isDirty || phoneState.invalid) return;
-        if (!emailState.isDirty || emailState.invalid) return;
-        if (!usernameState.isDirty || usernameState.invalid) return;
-        if (!roleState.isDirty || roleState.invalid) return;
-        if (!genderState.isDirty || genderState.invalid) return;
-        if (!birthYearState.isDirty || birthYearState.invalid) return;
-        if (!birthMonthState.isDirty || birthMonthState.invalid) return;
-        if (!birthDayState.isDirty || birthDayState.invalid) return;
+    const phoneState = form.getFieldState("phone");
+    const emailState = form.getFieldState("email");
+    const usernameState = form.getFieldState("username");
+    const roleState = form.getFieldState("role");
+    const genderState = form.getFieldState("gender");
+    const birthYearState = form.getFieldState("birthYear");
+    const birthMonthState = form.getFieldState("birthMonth");
+    const birthDayState = form.getFieldState("birthDay");
 
-        setStep(1);
-      });
+    if (!phoneState.isDirty || phoneState.invalid) return;
+    if (!emailState.isDirty || emailState.invalid) return;
+    if (!usernameState.isDirty || usernameState.invalid) return;
+    if (!roleState.isDirty || roleState.invalid) return;
+    if (!genderState.isDirty || genderState.invalid) return;
+    if (!birthYearState.isDirty || birthYearState.invalid) return;
+    if (!birthMonthState.isDirty || birthMonthState.invalid) return;
+    if (!birthDayState.isDirty || birthDayState.invalid) return;
+
+    setStep(1);
   };
 
   const pasteHandler = (event: React.ClipboardEvent<HTMLInputElement>) => {
