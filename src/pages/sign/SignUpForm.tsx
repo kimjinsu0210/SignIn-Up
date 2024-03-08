@@ -49,7 +49,6 @@ type RegisterType = z.infer<typeof registerSchema>;
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
-  console.log("step :", step);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -77,10 +76,8 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: RegisterType) => {
     const { password, confirmPassword } = data;
-    console.log("1");
 
     if (password !== confirmPassword) {
-      console.log("2");
       toast({
         title: "비밀번호가 일치하지 않습니다.",
         variant: "destructive",
@@ -91,7 +88,6 @@ const SignUpForm = () => {
     //auth 및 firestore 생성
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async () => {
-        console.log("3");
         await addDoc(collection(db, "users"), {
           username: data.username,
           email: data.email,
@@ -106,7 +102,6 @@ const SignUpForm = () => {
       })
       .catch((error) => {
         //auth 유효성 검사
-        console.log("4");
         const errorCode = error.code;
         if (errorCode === "auth/email-already-in-use") {
           toast({

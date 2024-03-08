@@ -45,7 +45,6 @@ export const SignInForm = () => {
   });
 
   const onSubmit = (data: RegisterType) => {
-    console.log("data :", data);
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         toast({
@@ -53,12 +52,10 @@ export const SignInForm = () => {
         });
         // Signed in
         const user = userCredential.user;
-        console.log("user :", user);
         router.push("./user/UserCard");
       })
       .catch((error) => {
         const errorCode = error.code;
-        console.log("errorCode :", errorCode);
         const toastMessage: { [key: string]: string } = {
           "auth/invalid-credential": "이메일이나 비밀번호가 올바르지 않습니다.",
           "auth/missing-email": "이메일을 입력해 주세요.",
