@@ -39,7 +39,7 @@ import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
 import { auth, db } from "../api/firebaseSDK";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -50,7 +50,7 @@ type RegisterType = z.infer<typeof registerSchema>;
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
-  const [address, setAddress] = useState<string>("");
+  const [kakaoAddr, setKakaoAddr] = useState<string>("");
   const [postCode, setPostCode] = useState<string>("");
 
   const { toast } = useToast();
@@ -91,7 +91,7 @@ const SignUpForm = () => {
       confirmPassword: "",
     },
   });
-  console.log("form :", form.watch());
+
   const onSubmit = async (data: RegisterType) => {
     const { password, confirmPassword } = data;
 
@@ -103,6 +103,7 @@ const SignUpForm = () => {
       });
       return;
     }
+
     //auth 및 firestore 생성
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async () => {
@@ -113,7 +114,7 @@ const SignUpForm = () => {
           birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
           gender: data.gender,
           role: data.role,
-          address: `${address} ${data.detailAddr}`,
+          address: `${kakaoAddr} ${data.detailAddr}`,
         });
         toast({
           title: "회원가입 완료",
@@ -144,9 +145,17 @@ const SignUpForm = () => {
       "birthDay",
       "detailAddr",
     ];
+    // 카카오 주소 유효성 검사
+    if (kakaoAddr === "") {
+      toast({
+        title: "주소를 선택해 주세요",
+        variant: "destructive",
+      });
+      return;
+    }
 
     await form.trigger(userData);
-
+    // form 데이터 유효성 검사
     for (const field of userData) {
       const fieldState = form.getFieldState(field);
       if (!fieldState.isDirty || fieldState.invalid) return;
@@ -167,7 +176,7 @@ const SignUpForm = () => {
     if (window.daum) {
       new window.daum.Postcode({
         oncomplete: function (data: addrType) {
-          setAddress(data.address);
+          setKakaoAddr(data.address);
           setPostCode(data.zonecode);
         },
       }).open();
@@ -364,7 +373,7 @@ const SignUpForm = () => {
                         <div className="flex flex-col gap-3">
                           <Input
                             type="text"
-                            value={address}
+                            value={kakaoAddr}
                             readOnly
                             onClick={kakaoAddrModal}
                           />
