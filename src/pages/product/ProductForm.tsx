@@ -5,6 +5,7 @@ import { auth, db } from "../api/firebaseSDK";
 import { useRouter } from "next/router";
 import { collection, getDocs } from "firebase/firestore";
 import { ProductType } from "@/types/type";
+import Image from "next/image";
 
 const ProductForm = () => {
   const router = useRouter();
@@ -35,6 +36,14 @@ const ProductForm = () => {
           className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 m-2"
         >
           <CardHeader>
+            <div>
+              <Image
+                src={data.productImage}
+                alt="이미지"
+                width={400}
+                height={300}
+              />
+            </div>
             <CardTitle>{data.productName}</CardTitle>
           </CardHeader>
           <CardContent>
