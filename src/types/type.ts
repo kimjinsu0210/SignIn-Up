@@ -1,3 +1,14 @@
+declare global {
+  interface Window {
+    daum: any;
+  }
+}
+
+export interface addrType {
+  address: string;
+  zonecode: string;
+}
+
 export interface UserType {
   username: string;
   email: string;
@@ -7,4 +18,5 @@ export interface UserType {
   birthMonth: string;
   birthDay: string;
   gender: string;
+  detailAddr: string;
 }

@@ -44,11 +44,15 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
+import { UserType, addrType } from "@/types/type";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
+  const [address, setAddress] = useState<string>("");
+  const [postCode, setPostCode] = useState<string>("");
+
   const { toast } = useToast();
   const router = useRouter();
 
@@ -57,6 +61,19 @@ const SignUpForm = () => {
       if (user) router.push("../user/UserCard");
     });
   }, [router]);
+
+  //카카오 API 주소 script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const form = useForm<RegisterType>({
     resolver: zodResolver(registerSchema),
@@ -69,11 +86,12 @@ const SignUpForm = () => {
       birthMonth: "",
       birthDay: "",
       gender: "",
+      detailAddr: "",
       password: "",
       confirmPassword: "",
     },
   });
-
+  console.log("form :", form.watch());
   const onSubmit = async (data: RegisterType) => {
     const { password, confirmPassword } = data;
 
@@ -95,6 +113,7 @@ const SignUpForm = () => {
           birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
           gender: data.gender,
           role: data.role,
+          address: `${address} ${data.detailAddr}`,
         });
         toast({
           title: "회원가입 완료",
@@ -114,7 +133,7 @@ const SignUpForm = () => {
   };
 
   const formValidationHandler = async () => {
-    await form.trigger([
+    const userData: (keyof UserType)[] = [
       "phone",
       "email",
       "username",
@@ -123,25 +142,15 @@ const SignUpForm = () => {
       "birthYear",
       "birthMonth",
       "birthDay",
-    ]);
+      "detailAddr",
+    ];
 
-    const phoneState = form.getFieldState("phone");
-    const emailState = form.getFieldState("email");
-    const usernameState = form.getFieldState("username");
-    const roleState = form.getFieldState("role");
-    const genderState = form.getFieldState("gender");
-    const birthYearState = form.getFieldState("birthYear");
-    const birthMonthState = form.getFieldState("birthMonth");
-    const birthDayState = form.getFieldState("birthDay");
+    await form.trigger(userData);
 
-    if (!phoneState.isDirty || phoneState.invalid) return;
-    if (!emailState.isDirty || emailState.invalid) return;
-    if (!usernameState.isDirty || usernameState.invalid) return;
-    if (!roleState.isDirty || roleState.invalid) return;
-    if (!genderState.isDirty || genderState.invalid) return;
-    if (!birthYearState.isDirty || birthYearState.invalid) return;
-    if (!birthMonthState.isDirty || birthMonthState.invalid) return;
-    if (!birthDayState.isDirty || birthDayState.invalid) return;
+    for (const field of userData) {
+      const fieldState = form.getFieldState(field);
+      if (!fieldState.isDirty || fieldState.invalid) return;
+    }
 
     setStep(1);
   };
@@ -152,6 +161,19 @@ const SignUpForm = () => {
       title: "붙여넣기를 할 수 없습니다.",
       variant: "destructive",
     });
+  };
+
+  const kakaoAddrModal = () => {
+    if (window.daum) {
+      new window.daum.Postcode({
+        oncomplete: function (data: addrType) {
+          setAddress(data.address);
+          setPostCode(data.zonecode);
+        },
+      }).open();
+    } else {
+      console.error("window.daum is not defined");
+    }
   };
 
   return (
@@ -247,14 +269,14 @@ const SignUpForm = () => {
                     name="birthYear"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>생년</FormLabel>
+                        <FormLabel>년</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="생년" />
+                              <SelectValue placeholder="년" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -331,6 +353,36 @@ const SignUpForm = () => {
                     )}
                   />
                 </div>
+                {/* 주소 입력란 */}
+                <FormField
+                  control={form.control}
+                  name="detailAddr"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>주소</FormLabel>
+                      <FormControl>
+                        <div className="flex flex-col gap-3">
+                          <Input
+                            type="text"
+                            value={address}
+                            readOnly
+                            onClick={kakaoAddrModal}
+                          />
+                          <Input type="text" value={postCode} readOnly />
+                          <Input
+                            id="addrDetail"
+                            placeholder="상세주소를 입력해 주세요."
+                            {...field}
+                          />
+                          <Button type="button" onClick={kakaoAddrModal}>
+                            검색
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="role"
