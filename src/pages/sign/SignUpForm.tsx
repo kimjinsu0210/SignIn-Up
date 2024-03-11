@@ -203,14 +203,14 @@ const SignUpForm = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="relative space-y-3 overflow-x-hidden w-full"
+              className="relative overflow-x-hidden w-full"
             >
               <motion.div
-                className={cn("flex justify-between gap-5 space-y-3")}
+                className={cn("flex justify-between gap-5")}
                 animate={{ translateX: `${step * -100}%` }}
                 transition={{ ease: "easeInOut" }}
               >
-                <div>
+                <div className="w-[250px]">
                   <FormField
                     control={form.control}
                     name="username"
@@ -254,33 +254,32 @@ const SignUpForm = () => {
                     control={form.control}
                     name="gender"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
+                      <FormItem>
                         <FormLabel>성별</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-col space-y-1"
+                            className="flex flex-col"
                           >
-                            <FormItem className="flex items-center space-x-1 space-y-0">
+                            <div className="flex gap-1">
                               <FormControl>
                                 <RadioGroupItem value="남성" />
                               </FormControl>
                               <FormLabel className="font-normal">남</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-1 space-y-0">
+
                               <FormControl>
                                 <RadioGroupItem value="여성" />
                               </FormControl>
                               <FormLabel className="font-normal">녀</FormLabel>
-                            </FormItem>
+                            </div>
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <div className="flex gap-5">
+                  <div className="flex gap-3">
                     <FormField
                       control={form.control}
                       name="birthYear"
@@ -296,7 +295,7 @@ const SignUpForm = () => {
                                 <SelectValue placeholder="년" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="min-w-[20px]">
                               {Array.from(
                                 { length: 114 },
                                 (_, i) => 2024 - i
@@ -326,7 +325,7 @@ const SignUpForm = () => {
                                 <SelectValue placeholder="월" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="min-w-[10px]">
                               {Array.from({ length: 12 }, (_, i) => i + 1).map(
                                 (month) => (
                                   <SelectItem key={month} value={String(month)}>
@@ -355,7 +354,7 @@ const SignUpForm = () => {
                                 <SelectValue placeholder="일" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="min-w-[10px]">
                               {Array.from({ length: 31 }, (_, i) => i + 1).map(
                                 (day) => (
                                   <SelectItem key={day} value={String(day)}>
@@ -371,7 +370,7 @@ const SignUpForm = () => {
                     />
                   </div>
                 </div>
-                <div>
+                <div className="mt-0">
                   {/* 주소 입력란 */}
                   <FormField
                     control={form.control}
@@ -385,7 +384,7 @@ const SignUpForm = () => {
                               type="text"
                               value={kakaoAddr}
                               onClick={kakaoAddrModal}
-                              className="w-[250px]"
+                              className="min-w-[300px]"
                               readOnly
                             />
                             <Input
@@ -412,7 +411,7 @@ const SignUpForm = () => {
                     control={form.control}
                     name="role"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="w-[200px]">
                         <FormLabel>역할</FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -435,7 +434,7 @@ const SignUpForm = () => {
                 </div>
               </motion.div>
               <motion.div
-                className={cn("space-y-3 absolute top-0 left-0 right-0")}
+                className={cn("absolute top-0 left-0 right-0")}
                 animate={{ translateX: `${(1 - step) * 100}%` }}
                 style={{ translateX: `${(1 - step) * 100}%` }}
                 transition={{

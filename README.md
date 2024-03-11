@@ -14,11 +14,8 @@ React-hook-form과 Zod를 이용해서 설계했습니다.<br><br>
 # 의존성 패키지 설치
 yarn install
 
-# 프로젝트 빌드
-yarn run build
-
-# 프로젝트 실행
-yarn run start
+# 개발 서버 실행
+yarn start or yarn dev
 ```
 
 ## 기술 스택
