@@ -6,7 +6,9 @@ declare global {
 
 export interface addrType {
   address: string;
+  jibunAddress: string;
   zonecode: string;
+  userSelectedType: string;
 }
 
 export interface UserType {
