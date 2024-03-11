@@ -22,3 +22,9 @@ export interface UserType {
   gender: string;
   detailAddr: string;
 }
+
+export interface ProductType {
+  productImage: string;
+  productName: string;
+  productPrice: string;
+}

@@ -30,15 +30,23 @@ export function ModeToggle({
   return (
     <div className={className} {...props}>
       {loginState && (
-        <Button
-          onClick={async () => {
-            await signOut(auth);
-            setLoginState(false);
-          }}
-          variant="outline"
-        >
-          로그아웃
-        </Button>
+        <>
+          <Button
+            onClick={() => router.push("../product/ProductForm")}
+            variant="outline"
+          >
+            상품페이지
+          </Button>
+          <Button
+            onClick={async () => {
+              await signOut(auth);
+              setLoginState(false);
+            }}
+            variant="outline"
+          >
+            로그아웃
+          </Button>
+        </>
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

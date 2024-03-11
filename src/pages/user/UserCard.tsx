@@ -18,6 +18,7 @@ import Autoplay from "embla-carousel-autoplay";
 const UserCard = () => {
   const router = useRouter();
   const [users, setUsers] = useState<UserType[]>([]);
+  const [loginEmail, setLoginEmail] = useState<string | null>("");
 
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true })
@@ -26,6 +27,7 @@ const UserCard = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
+      if (user !== null) setLoginEmail(user.email);
     });
 
     const fetchData = async () => {
@@ -52,7 +54,9 @@ const UserCard = () => {
           {users.map((user, index) => (
             <CarouselItem key={index}>
               <div className="p-1">
-                <Card>
+                <Card
+                  className={loginEmail === user.email ? "bg-[#00b7ff]" : ""}
+                >
                   <CardContent className="flex items-center justify-center p-4">
                     <span className="font-semibold">{user.username}</span>
                   </CardContent>
