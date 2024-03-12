@@ -57,7 +57,7 @@ const ProductForm = () => {
             <CardTitle className="text-lg">{data.productName}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{data.productPrice}원</p>
+            <p>{data.productPrice.toLocaleString()}원</p>
           </CardContent>
         </Card>
       ))}

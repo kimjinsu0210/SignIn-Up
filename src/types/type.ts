@@ -26,5 +26,13 @@ export interface UserType {
 export interface ProductType {
   productImage: string;
   productName: string;
-  productPrice: string;
+  productPrice: number;
+}
+
+export interface PaymentType {
+  username: string;
+  email: string;
+  phone: string;
+  address: string;
+  deliveryMemo: string;
 }
