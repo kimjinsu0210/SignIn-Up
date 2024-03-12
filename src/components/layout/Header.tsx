@@ -8,15 +8,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/pages/api/firebaseSDK";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-export function ModeToggle({
+const Header = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const [loginState, setLoginState] = useState<boolean>(false);
   const { setTheme } = useTheme();
   const router = useRouter();
@@ -28,7 +29,10 @@ export function ModeToggle({
   }, [router]);
 
   return (
-    <div className={className} {...props}>
+    <div
+      className={`flex justify-end items-center h-20 gap-3 p-3 bg-white ${className}`}
+      {...props}
+    >
       {loginState && (
         <>
           <Button
@@ -67,4 +71,6 @@ export function ModeToggle({
       </DropdownMenu>
     </div>
   );
-}
+};
+
+export default Header;

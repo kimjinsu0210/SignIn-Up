@@ -55,7 +55,7 @@ const UserCard = () => {
             <CarouselItem key={index}>
               <div className="p-1">
                 <Card
-                  className={loginEmail === user.email ? "bg-[#00b7ff]" : ""}
+                  className={loginEmail === user.email ? "bg-[#B4C8BB]" : ""}
                 >
                   <CardContent className="flex items-center justify-center p-4">
                     <span className="font-semibold">{user.username}</span>

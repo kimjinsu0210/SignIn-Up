@@ -206,7 +206,7 @@ const SignUpForm = () => {
               className="relative overflow-x-hidden w-full"
             >
               <motion.div
-                className={cn("flex justify-between gap-5")}
+                className={cn("flex justify-between gap-10")}
                 animate={{ translateX: `${step * -100}%` }}
                 transition={{ ease: "easeInOut" }}
               >

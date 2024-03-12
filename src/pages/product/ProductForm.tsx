@@ -15,7 +15,6 @@ const ProductForm = () => {
     onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
     });
-
     const fetchData = async () => {
       const querySnapshot = await getDocs(collection(db, "products"));
       const fetchedProducts: ProductType[] = [];
