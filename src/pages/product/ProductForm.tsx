@@ -14,18 +14,19 @@ const ProductForm = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
+      else fetchData();
     });
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "products"));
-      const fetchedProducts: ProductType[] = [];
-      querySnapshot.forEach((doc) => {
-        const productData = doc.data() as ProductType;
-        fetchedProducts.push(productData);
-      });
-      setProducts(fetchedProducts);
-    };
-    fetchData();
   }, [router]);
+
+  const fetchData = async () => {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    const fetchedProducts: ProductType[] = [];
+    querySnapshot.forEach((doc) => {
+      const productData = doc.data() as ProductType;
+      fetchedProducts.push(productData);
+    });
+    setProducts(fetchedProducts);
+  };
 
   return (
     <div className="flex flex-wrap mt-24 ml-60">

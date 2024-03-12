@@ -13,6 +13,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/pages/api/firebaseSDK";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const Header = ({
   className,
@@ -30,45 +31,55 @@ const Header = ({
 
   return (
     <div
-      className={`flex justify-end items-center h-20 gap-3 p-3 bg-white ${className}`}
+      className={`flex justify-around items-center h-20 gap-3 p-6 bg-white ${className}`}
       {...props}
     >
-      {loginState && (
-        <>
-          <Button
-            onClick={() => router.push("../product/ProductForm")}
-            variant="outline"
-          >
-            상품페이지
-          </Button>
-          <Button
-            onClick={async () => {
-              await signOut(auth);
-              setLoginState(false);
-            }}
-            variant="outline"
-          >
-            로그아웃
-          </Button>
-        </>
-      )}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setTheme("light")}>
-            Light
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("dark")}>
-            Dark
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="cursor-pointer" onClick={() => router.push("/")}>
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/next-signup-in.appspot.com/o/image%2FprojectIcon.png?alt=media&token=3295976b-8d5e-49dd-8c0b-b6f1a3751d27"
+          alt="이미지"
+          width={45}
+          height={45}
+        />
+      </div>
+      <div className="flex justify-center gap-3">
+        {loginState && (
+          <>
+            <Button
+              onClick={() => router.push("../product/ProductForm")}
+              variant="outline"
+            >
+              상품페이지
+            </Button>
+            <Button
+              onClick={async () => {
+                await signOut(auth);
+                setLoginState(false);
+              }}
+              variant="outline"
+            >
+              로그아웃
+            </Button>
+          </>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setTheme("light")}>
+              Light
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")}>
+              Dark
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 };

@@ -25,25 +25,32 @@ const UserCard = () => {
   );
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) router.push("/");
-      if (user !== null) setLoginEmail(user.email);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/");
+      } else {
+        setLoginEmail(user.email);
+        fetchData();
+      }
     });
-
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const fetchedUsers: UserType[] = [];
-      querySnapshot.forEach((doc) => {
-        const userData = doc.data() as UserType;
-        fetchedUsers.push(userData);
-      });
-      setUsers(fetchedUsers);
-    };
-    fetchData();
+    return () => unsubscribe();
   }, [router]);
+
+  const fetchData = async () => {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const fetchedUsers: UserType[] = [];
+    querySnapshot.forEach((doc) => {
+      const userData = doc.data() as UserType;
+      fetchedUsers.push(userData);
+    });
+    setUsers(fetchedUsers);
+  };
 
   return (
     <Layout>
+      <h1 className="text-lg font-bold text-center mb-5">
+        가입된 회원들의 모든 정보입니다.
+      </h1>
       <Carousel
         plugins={[plugin.current]}
         className="w-full max-w-xs"
