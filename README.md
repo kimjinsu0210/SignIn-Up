@@ -6,16 +6,16 @@ UI를 구성하는 컴포넌트는 shadcn-ui 를 이용했고 회원가입 시 �
 React-hook-form과 Zod를 이용해서 설계했습니다.<br><br>
 백엔드로는 firebase의 auth, firestore(DB) 이용했습니다.
 
-## 프로젝트 설정
+## 프로젝트 설정 및 실행
 
-1. 프로젝트 클론 후 아래 명령어를 입력해 개발 서버 환경을 구축하세요!
+1. 프로젝트 클론 후 아래 명령어를 입력을 통해 프로젝트를 실행할 수 있습니다.
 
 ```
-# 패키지 설치
+# 의존성 패키지 설치
 yarn install
 
 # 개발 서버 실행
-yarn run dev
+yarn start or yarn dev
 ```
 
 ## 기술 스택

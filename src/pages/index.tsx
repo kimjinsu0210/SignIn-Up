@@ -108,10 +108,11 @@ export default function Home() {
                 )}
               />
               <div className={"flex justify-between gap-2"}>
-                <Button type="submit">로그인</Button>
+                <Button type="submit" variant={"outline"}>
+                  로그인
+                </Button>
                 <Button
                   type="button"
-                  variant={"outline"}
                   onClick={() => router.push("/sign/SignUpForm")}
                 >
                   회원가입

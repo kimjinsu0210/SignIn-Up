@@ -3,16 +3,16 @@ import type { AppProps } from "next/app";
 
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/mode-toggle";
+import Header from "@/components/layout/Header";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       <div className={"min-h-screen"}>
+        <Header />
         <Component {...pageProps} />
         <Toaster />
       </div>
-      <ModeToggle className={"absolute top-6 right-6 flex gap-3"} />
     </ThemeProvider>
   );
 }

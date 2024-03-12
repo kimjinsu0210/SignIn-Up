@@ -39,23 +39,41 @@ import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
 import { auth, db } from "../api/firebaseSDK";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
+import { UserType, addrType } from "@/types/type";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
+  const [kakaoAddr, setKakaoAddr] = useState<string>("");
+  const [postCode, setPostCode] = useState<string>("");
+
   const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    // 카카오 API 주소 script 로드
+    const script = document.createElement("script");
+    script.src =
+      "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    // 로그인 상태일 때 router
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) router.push("../user/UserCard");
     });
+
+    // Cleanup 함수
+    return () => {
+      document.body.removeChild(script);
+      unsubscribe();
+    };
   }, [router]);
 
   const form = useForm<RegisterType>({
@@ -69,6 +87,7 @@ const SignUpForm = () => {
       birthMonth: "",
       birthDay: "",
       gender: "",
+      detailAddr: "",
       password: "",
       confirmPassword: "",
     },
@@ -85,6 +104,7 @@ const SignUpForm = () => {
       });
       return;
     }
+
     //auth 및 firestore 생성
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async () => {
@@ -95,6 +115,7 @@ const SignUpForm = () => {
           birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
           gender: data.gender,
           role: data.role,
+          address: `${kakaoAddr} ${data.detailAddr}`,
         });
         toast({
           title: "회원가입 완료",
@@ -114,7 +135,7 @@ const SignUpForm = () => {
   };
 
   const formValidationHandler = async () => {
-    await form.trigger([
+    const userData: (keyof UserType)[] = [
       "phone",
       "email",
       "username",
@@ -123,25 +144,23 @@ const SignUpForm = () => {
       "birthYear",
       "birthMonth",
       "birthDay",
-    ]);
+      "detailAddr",
+    ];
+    // 카카오 주소 유효성 검사
+    if (kakaoAddr === "") {
+      toast({
+        title: "주소를 선택해 주세요",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    const phoneState = form.getFieldState("phone");
-    const emailState = form.getFieldState("email");
-    const usernameState = form.getFieldState("username");
-    const roleState = form.getFieldState("role");
-    const genderState = form.getFieldState("gender");
-    const birthYearState = form.getFieldState("birthYear");
-    const birthMonthState = form.getFieldState("birthMonth");
-    const birthDayState = form.getFieldState("birthDay");
-
-    if (!phoneState.isDirty || phoneState.invalid) return;
-    if (!emailState.isDirty || emailState.invalid) return;
-    if (!usernameState.isDirty || usernameState.invalid) return;
-    if (!roleState.isDirty || roleState.invalid) return;
-    if (!genderState.isDirty || genderState.invalid) return;
-    if (!birthYearState.isDirty || birthYearState.invalid) return;
-    if (!birthMonthState.isDirty || birthMonthState.invalid) return;
-    if (!birthDayState.isDirty || birthDayState.invalid) return;
+    await form.trigger(userData);
+    // form 데이터 유효성 검사
+    for (const field of userData) {
+      const fieldState = form.getFieldState(field);
+      if (!fieldState.isDirty || fieldState.invalid) return;
+    }
 
     setStep(1);
   };
@@ -154,9 +173,28 @@ const SignUpForm = () => {
     });
   };
 
+  const kakaoAddrModal = () => {
+    if (!window.daum) {
+      console.error("window.daum is not defined");
+      return;
+    }
+
+    new window.daum.Postcode({
+      oncomplete: function (data: addrType) {
+        let selectedAddress = data.address;
+        // 지번주소 선택 시 지번주소 저장
+        if (data.userSelectedType === "J") {
+          selectedAddress = data.jibunAddress;
+        }
+        setKakaoAddr(selectedAddress);
+        setPostCode(data.zonecode);
+      },
+    }).open();
+  };
+
   return (
     <Layout>
-      <Card className={cn("w-[400px]")}>
+      <Card className={cn("w-full")}>
         <CardHeader>
           <CardTitle>회원가입</CardTitle>
           <CardDescription>필수 정보를 입력해주세요.</CardDescription>
@@ -165,165 +203,228 @@ const SignUpForm = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="relative space-y-3 overflow-x-hidden"
+              className="relative overflow-x-hidden w-full"
             >
               <motion.div
-                className={cn("space-y-3")}
+                className={cn("flex justify-between gap-10")}
                 animate={{ translateX: `${step * -100}%` }}
                 transition={{ ease: "easeInOut" }}
               >
-                <FormField
-                  control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>이름</FormLabel>
-                      <FormControl>
-                        <Input placeholder="이름을 입력하세요" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>이메일</FormLabel>
-                      <FormControl>
-                        <Input placeholder="이메일을 입력하세요" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>연락처</FormLabel>
-                      <FormControl>
-                        <Input placeholder="010-XXXX-XXXX" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>성별</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex flex-col space-y-1"
-                        >
-                          <FormItem className="flex items-center space-x-1 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="남성" />
-                            </FormControl>
-                            <FormLabel className="font-normal">남</FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-1 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="여성" />
-                            </FormControl>
-                            <FormLabel className="font-normal">녀</FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex gap-5">
+                <div className="w-[250px]">
                   <FormField
                     control={form.control}
-                    name="birthYear"
+                    name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>생년</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="생년" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Array.from(
-                              { length: 114 },
-                              (_, i) => 2024 - i
-                            ).map((year) => (
-                              <SelectItem key={year} value={String(year)}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>이름</FormLabel>
+                        <FormControl>
+                          <Input placeholder="이름을 입력하세요" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="birthMonth"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>월</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="월" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Array.from({ length: 12 }, (_, i) => i + 1).map(
-                              (month) => (
-                                <SelectItem key={month} value={String(month)}>
-                                  {String(month)}
-                                </SelectItem>
-                              )
-                            )}
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>이메일</FormLabel>
+                        <FormControl>
+                          <Input placeholder="이메일을 입력하세요" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="birthDay"
+                    name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>일</FormLabel>
+                        <FormLabel>연락처</FormLabel>
+                        <FormControl>
+                          <Input placeholder="010-XXXX-XXXX" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>성별</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-col"
+                          >
+                            <div className="flex gap-1">
+                              <FormControl>
+                                <RadioGroupItem value="남성" />
+                              </FormControl>
+                              <FormLabel className="font-normal">남</FormLabel>
+
+                              <FormControl>
+                                <RadioGroupItem value="여성" />
+                              </FormControl>
+                              <FormLabel className="font-normal">녀</FormLabel>
+                            </div>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex gap-3">
+                    <FormField
+                      control={form.control}
+                      name="birthYear"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>년</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="년" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="min-w-[20px]">
+                              {Array.from(
+                                { length: 114 },
+                                (_, i) => 2024 - i
+                              ).map((year) => (
+                                <SelectItem key={year} value={String(year)}>
+                                  {year}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="birthMonth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>월</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="월" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="min-w-[10px]">
+                              {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                                (month) => (
+                                  <SelectItem key={month} value={String(month)}>
+                                    {String(month)}
+                                  </SelectItem>
+                                )
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="birthDay"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>일</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="일" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="min-w-[10px]">
+                              {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                                (day) => (
+                                  <SelectItem key={day} value={String(day)}>
+                                    {day}
+                                  </SelectItem>
+                                )
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="mt-0">
+                  {/* 주소 입력란 */}
+                  <FormField
+                    control={form.control}
+                    name="detailAddr"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>주소</FormLabel>
+                        <FormControl>
+                          <div className="flex flex-col gap-3">
+                            <Input
+                              type="text"
+                              value={kakaoAddr}
+                              onClick={kakaoAddrModal}
+                              className="min-w-[300px]"
+                              readOnly
+                            />
+                            <Input
+                              type="text"
+                              value={postCode}
+                              onClick={kakaoAddrModal}
+                              readOnly
+                            />
+                            <Input
+                              id="addrDetail"
+                              placeholder="상세주소를 입력해 주세요."
+                              {...field}
+                            />
+                            <Button type="button" onClick={kakaoAddrModal}>
+                              주소 찾기
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem className="w-[200px]">
+                        <FormLabel>역할</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="일" />
+                              <SelectValue placeholder="역할을 선택해주세요" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Array.from({ length: 31 }, (_, i) => i + 1).map(
-                              (day) => (
-                                <SelectItem key={day} value={String(day)}>
-                                  {day}
-                                </SelectItem>
-                              )
-                            )}
+                            <SelectItem value="admin">관리자</SelectItem>
+                            <SelectItem value="user">사용자</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -331,33 +432,9 @@ const SignUpForm = () => {
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>역할</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="역할을 선택해주세요" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="admin">관리자</SelectItem>
-                          <SelectItem value="user">사용자</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </motion.div>
               <motion.div
-                className={cn("space-y-3 absolute top-0 left-0 right-0")}
+                className={cn("absolute top-0 left-0 right-0")}
                 animate={{ translateX: `${(1 - step) * 100}%` }}
                 style={{ translateX: `${(1 - step) * 100}%` }}
                 transition={{
