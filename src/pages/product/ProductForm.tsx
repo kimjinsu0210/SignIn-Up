@@ -33,7 +33,17 @@ const ProductForm = () => {
       {products.map((data, index) => (
         <Card
           key={index}
-          className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 m-2"
+          className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 m-2 p-2 cursor-pointer"
+          onClick={() => {
+            router.push({
+              pathname: "../payment/PaymentForm",
+              query: {
+                productImage: data.productImage,
+                productName: data.productName,
+                productPrice: data.productPrice,
+              },
+            });
+          }}
         >
           <CardHeader>
             <div>
@@ -44,7 +54,7 @@ const ProductForm = () => {
                 height={300}
               />
             </div>
-            <CardTitle>{data.productName}</CardTitle>
+            <CardTitle className="text-lg">{data.productName}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>{data.productPrice}원</p>
