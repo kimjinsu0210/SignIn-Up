@@ -29,16 +29,18 @@ import { PaymentType } from "@/types/type";
 import { collection, getDocs } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
 
 const PaymentForm = () => {
   const [userData, setUserData] = useState<PaymentType | null>(null);
   const [directInput, setDirectInput] = useState<boolean>(false);
-  console.log("directInput :", directInput);
   const router = useRouter();
   const { productImage, productName, productPrice } = router.query;
 
   const form = useForm<PaymentType>({
-    defaultValues: {},
+    defaultValues: {
+      deliveryMemo: "",
+    },
   });
   console.log("form :", form.watch());
 
@@ -86,17 +88,17 @@ const PaymentForm = () => {
           <div className="flex flex-col gap-5 m-5 w-1/3">
             <Card>
               <CardHeader>
-                <CardTitle>주문자 정보</CardTitle>
+                <CardTitle className="text-xl">주문자 정보</CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col gap-3">
-                <p>{userData?.username}</p>
-                <p>{userData?.phone}</p>
-                <p>{userData?.email}</p>
+              <CardContent className="flex flex-col gap-2">
+                <p className="font-bold">{userData?.username}</p>
+                <p className="text-[#767678]">{userData?.phone}</p>
+                <p className="text-[#767678]">{userData?.email}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>배송지</CardTitle>
+                <CardTitle className="text-xl">배송지</CardTitle>
               </CardHeader>
               <CardContent className="p-3 pl-6">
                 <p>{userData?.address}</p>
@@ -105,7 +107,7 @@ const PaymentForm = () => {
                 control={form.control}
                 name="deliveryMemo"
                 render={({ field }) => (
-                  <FormItem className="w-full p-5">
+                  <FormItem className="flex flex-col gap-2 w-full px-5">
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -160,7 +162,32 @@ const PaymentForm = () => {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>주문상품</CardTitle>
+                <CardTitle className="text-xl">주문 상품</CardTitle>
+              </CardHeader>
+              <div className="flex">
+                <CardContent>
+                  <Image
+                    src={
+                      Array.isArray(productImage)
+                        ? productImage[0]
+                        : productImage || ""
+                    }
+                    alt="이미지"
+                    width={100}
+                    height={100}
+                  />
+                </CardContent>
+                <CardContent className="p-0 pr-6">
+                  <p>{productName}</p>
+                  <p className="text-[#1088ED]">
+                    {Number(productPrice)?.toLocaleString()}원
+                  </p>
+                </CardContent>
+              </div>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">쿠폰/포인트</CardTitle>
                 <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
@@ -172,19 +199,7 @@ const PaymentForm = () => {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>쿠폰/포인트</CardTitle>
-                <CardDescription>Card Description</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Card Content</p>
-              </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>현금영수증</CardTitle>
+                <CardTitle className="text-xl">현금영수증</CardTitle>
                 <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
@@ -198,7 +213,7 @@ const PaymentForm = () => {
           <div className="flex flex-col gap-5 m-5 w-1/5">
             <Card>
               <CardHeader>
-                <CardTitle>최종 결제금액</CardTitle>
+                <CardTitle className="text-xl">최종 결제금액</CardTitle>
                 <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
@@ -210,7 +225,7 @@ const PaymentForm = () => {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>결제수단</CardTitle>
+                <CardTitle className="text-xl">결제수단</CardTitle>
                 <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
@@ -222,7 +237,7 @@ const PaymentForm = () => {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>전체동의</CardTitle>
+                <CardTitle className="text-xl">전체동의</CardTitle>
                 <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
