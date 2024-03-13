@@ -28,14 +28,20 @@ export interface ProductType {
   productImage: string;
   productName: string;
   productPrice: number;
+  deliveryCost: number;
 }
 
 export interface PaymentType {
+  id: string;
+  type: string;
   username: string;
   email: string;
   phone: string;
   address: string;
   deliveryMemo: string;
   coupon: string;
-  couponNumber: string;
+  couponName: string;
+  discount: number;
+  discountAmount: number;
+  point: number;
 }

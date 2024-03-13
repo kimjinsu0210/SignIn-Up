@@ -45,20 +45,29 @@ const ProductCard = () => {
             });
           }}
         >
-          <CardHeader>
-            <div>
-              <Image
-                src={data.productImage}
-                alt="이미지"
-                width={400}
-                height={300}
-              />
-            </div>
-            <CardTitle className="text-lg">{data.productName}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{data.productPrice.toLocaleString()}원</p>
-          </CardContent>
+          <div className="flex flex-col justify-between h-full">
+            <CardHeader>
+              <div>
+                <Image
+                  src={data.productImage}
+                  alt="이미지"
+                  width={400}
+                  height={300}
+                />
+              </div>
+              <CardTitle className="text-lg">{data.productName}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex gap-3">
+              <div>
+                <p>상품 가격</p>
+                <p>배송비</p>
+              </div>
+              <div className="ml-3">
+                <p>{data.productPrice.toLocaleString()}원</p>
+                <p>{data.deliveryCost.toLocaleString()}원</p>
+              </div>
+            </CardContent>
+          </div>
         </Card>
       ))}
     </div>

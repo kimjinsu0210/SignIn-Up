@@ -125,14 +125,26 @@ const SignUpForm = () => {
         // 신규회원 쿠폰 부여 로직
         // 쿠폰 type에서 P는 정률제 F는 정액제 약자
         const type = "P";
+        const type2 = "F";
         const discount = 20;
+        const discount2 = 5000;
         const UUID2 = v4();
+        const UUID3 = v4();
         await addDoc(collection(db, "coupon"), {
           id: UUID2,
           type,
-          couponName: "신규회원 쿠폰",
+          couponName: "신규회원 쿠폰 20% 할인",
           discount: type === "P" ? discount : null,
           discountAmount: type === "P" ? null : discount,
+          userEmail: data.email,
+          createTime: nowTime,
+        });
+        await addDoc(collection(db, "coupon"), {
+          id: UUID3,
+          type,
+          couponName: "5000원 할인권",
+          discount: type2 === "F" ? null : discount2,
+          discountAmount: type2 === "F" ? discount2 : null,
           userEmail: data.email,
           createTime: nowTime,
         });
