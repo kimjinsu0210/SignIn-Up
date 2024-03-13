@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
+import { v4 } from "uuid";
 
 import {
   Card,
@@ -39,12 +40,13 @@ import { ArrowRight } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/router";
 import { auth, db } from "../api/firebaseSDK";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
 import { UserType, addrType } from "@/types/type";
+import { randomUUID } from "crypto";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -52,7 +54,6 @@ const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
   const [kakaoAddr, setKakaoAddr] = useState<string>("");
   const [postCode, setPostCode] = useState<string>("");
-
   const { toast } = useToast();
   const router = useRouter();
 
@@ -92,10 +93,10 @@ const SignUpForm = () => {
       confirmPassword: "",
     },
   });
-
+  // 계정 생성 핸들러
   const onSubmit = async (data: RegisterType) => {
+    // 비밀번호 비교 로직
     const { password, confirmPassword } = data;
-
     if (password !== confirmPassword) {
       toast({
         title: "비밀번호가 일치하지 않습니다.",
@@ -104,11 +105,13 @@ const SignUpForm = () => {
       });
       return;
     }
-
     //auth 및 firestore 생성
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async () => {
+        const nowTime = serverTimestamp();
+        const UUID = v4();
         await addDoc(collection(db, "users"), {
+          id: UUID,
           username: data.username,
           email: data.email,
           phone: data.phone,
@@ -116,6 +119,22 @@ const SignUpForm = () => {
           gender: data.gender,
           role: data.role,
           address: `${kakaoAddr} ${data.detailAddr}`,
+          point: 0,
+          regDate: nowTime,
+        });
+        // 신규회원 쿠폰 부여 로직
+        // 쿠폰 type에서 P는 정률제 F는 정액제 약자
+        const type = "P";
+        const discount = 20;
+        const UUID2 = v4();
+        await addDoc(collection(db, "coupon"), {
+          id: UUID2,
+          type,
+          couponName: "신규회원 쿠폰",
+          discount: type === "P" ? discount : null,
+          discountAmount: type === "P" ? null : discount,
+          userEmail: data.email,
+          createTime: nowTime,
         });
         toast({
           title: "회원가입 완료",
@@ -130,11 +149,21 @@ const SignUpForm = () => {
             variant: "destructive",
             action: <ToastAction altText="Try again">다시 입력</ToastAction>,
           });
+          return;
         }
       });
   };
+  // 다음 단계 핸들러
+  const nextLevelHandler = async () => {
+    // 카카오 주소 유효성 검사
+    if (kakaoAddr === "") {
+      toast({
+        title: "주소를 선택해 주세요",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const formValidationHandler = async () => {
     const userData: (keyof UserType)[] = [
       "phone",
       "email",
@@ -146,17 +175,9 @@ const SignUpForm = () => {
       "birthDay",
       "detailAddr",
     ];
-    // 카카오 주소 유효성 검사
-    if (kakaoAddr === "") {
-      toast({
-        title: "주소를 선택해 주세요",
-        variant: "destructive",
-      });
-      return;
-    }
 
     await form.trigger(userData);
-    // form 데이터 유효성 검사
+    // 카카오 주소와 비밀번호를 제외한 form 데이터 유효성 검사
     for (const field of userData) {
       const fieldState = form.getFieldState(field);
       if (!fieldState.isDirty || fieldState.invalid) return;
@@ -178,7 +199,6 @@ const SignUpForm = () => {
       console.error("window.daum is not defined");
       return;
     }
-
     new window.daum.Postcode({
       oncomplete: function (data: addrType) {
         let selectedAddress = data.address;
@@ -264,14 +284,27 @@ const SignUpForm = () => {
                           >
                             <div className="flex gap-1">
                               <FormControl>
-                                <RadioGroupItem value="남성" />
+                                <RadioGroupItem value="남성" id="gender-male" />
                               </FormControl>
-                              <FormLabel className="font-normal">남</FormLabel>
+                              <FormLabel
+                                className="font-normal"
+                                htmlFor="gender-male"
+                              >
+                                남
+                              </FormLabel>
 
                               <FormControl>
-                                <RadioGroupItem value="여성" />
+                                <RadioGroupItem
+                                  value="여성"
+                                  id="gender-female"
+                                />
                               </FormControl>
-                              <FormLabel className="font-normal">녀</FormLabel>
+                              <FormLabel
+                                className="font-normal"
+                                htmlFor="gender-female"
+                              >
+                                녀
+                              </FormLabel>
                             </div>
                           </RadioGroup>
                         </FormControl>
@@ -476,7 +509,7 @@ const SignUpForm = () => {
                 <Button
                   type="button"
                   className={cn({ hidden: step === 1 })}
-                  onClick={formValidationHandler}
+                  onClick={nextLevelHandler}
                 >
                   다음 단계로
                   <ArrowRight className="w-4 h-4 ml-2" />

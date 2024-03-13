@@ -30,6 +30,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
 
 const PaymentForm = () => {
   const [userData, setUserData] = useState<PaymentType | null>(null);
@@ -92,7 +93,7 @@ const PaymentForm = () => {
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
                 <p className="font-bold">{userData?.username}</p>
-                <p className="text-[#767678]">{userData?.phone}</p>
+                <p className="text-gray-light">{userData?.phone}</p>
                 <p className="text-[#767678]">{userData?.email}</p>
               </CardContent>
             </Card>
@@ -107,7 +108,7 @@ const PaymentForm = () => {
                 control={form.control}
                 name="deliveryMemo"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2 w-full px-5">
+                  <FormItem className="flex flex-col gap-2 w-full p-5 pt-0">
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -188,14 +189,37 @@ const PaymentForm = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl">쿠폰/포인트</CardTitle>
-                <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Card Content</p>
+                <p>쿠폰</p>
+                <FormField
+                  control={form.control}
+                  name="coupon"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-2 w-full">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="선택 안 함" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1000">1,000원 할인권</SelectItem>
+                          <SelectItem value="3000">3,000원 할인권</SelectItem>
+                          <SelectItem value="5000">5,000원 할인권</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
+              <CardContent>
+                <p>포인트</p>
+              </CardContent>
             </Card>
             <Card>
               <CardHeader>
@@ -203,49 +227,49 @@ const PaymentForm = () => {
                 <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Card Content</p>
+                <p>현금영수증 신청</p>
               </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
+              <CardContent>
+                <p>소득공제</p>
+                <p>지출증빙</p>
+              </CardContent>
             </Card>
           </div>
           <div className="flex flex-col gap-5 m-5 w-1/5">
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl">최종 결제금액</CardTitle>
-                <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Card Content</p>
+                <p>상품 가격</p>
+                <p>쿠폰 할인</p>
+                <p>포인트 사용</p>
+                <p>배송비</p>
               </CardContent>
               <CardFooter>
-                <p>Card Footer</p>
+                <p>총 결제금액</p>
               </CardFooter>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl">결제수단</CardTitle>
-                <CardDescription>Card Description</CardDescription>
+                <CardTitle className="text-xl">결제 방법</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Card Content</p>
+                <p>신용/체크카드</p>
+                <p>무통장 입금</p>
+                <p>핸드폰 결제</p>
+                <p>카카오페이</p>
+                <p>법인카드</p>
               </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
             </Card>
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl">전체동의</CardTitle>
-                <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Card Content</p>
+                <p>전체동의</p>
+                <p>구매조건 확인 및 결제진행에 동의</p>
               </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
             </Card>
           </div>
         </div>
