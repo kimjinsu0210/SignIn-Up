@@ -141,7 +141,7 @@ const SignUpForm = () => {
         });
         await addDoc(collection(db, "coupon"), {
           id: UUID3,
-          type,
+          type: type2,
           couponName: "5000원 할인권",
           discount: type2 === "F" ? null : discount2,
           discountAmount: type2 === "F" ? discount2 : null,
