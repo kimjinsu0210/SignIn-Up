@@ -23,59 +23,117 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import Image from "next/image";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../api/firebaseSDK";
 import { PaymentType } from "@/types/type";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { paymentSchema } from "@/validators/payment";
+import { toast } from "@/components/ui/use-toast";
 
 const PaymentForm = () => {
-  const [userData, setUserData] = useState<PaymentType | null>(null);
-  const [directInput, setDirectInput] = useState<boolean>(false);
   const router = useRouter();
-  const { productImage, productName, productPrice } = router.query;
+  const { productImage, productName, productPrice, deliveryCost } =
+    router.query;
+  const sumProDeliv = Number(productPrice ?? 0) + Number(deliveryCost ?? 0);
+  const [userData, setUserData] = useState<PaymentType | null>(null);
+  const [userPoint, setUserPoint] = useState<number>(0);
+  const [applyPoint, setApplyPoint] = useState<number>(0);
+  const [couponData, setCouponData] = useState<PaymentType[]>([]);
+  const [directInput, setDirectInput] = useState<boolean>(false);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const form = useForm<PaymentType>({
+    resolver: zodResolver(paymentSchema),
     defaultValues: {
       deliveryMemo: "",
+      point: "",
     },
   });
-  console.log("form :", form.watch());
+  console.log("form :", form.watch("point"));
 
-  const onSubmit = async (data: PaymentType) => {
-    console.log("data :", data);
-  };
+  useEffect(() => {
+    setTotalAmount(sumProDeliv);
+  }, [sumProDeliv]);
+
+  useEffect(() => {
+    if (totalAmount < 0) {
+      toast({
+        title: "총 결제금액은 마이너스가 될 수 없습니다.",
+        variant: "destructive",
+      });
+    }
+  }, [totalAmount]);
+
   useEffect(() => {
     // 인증 상태 변경시마다 실행되는 함수 설정
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
-      else fetchData();
+      fetchData();
     });
-
     return () => unsubscribe();
   }, [router]);
 
   const fetchData = async () => {
-    const querySnapshot = await getDocs(collection(db, "users"));
-    const fetchedUsers: PaymentType[] = [];
-    querySnapshot.forEach((doc) => {
-      const userData = doc.data() as PaymentType;
-      fetchedUsers.push(userData);
-    });
     // 현재 로그인한 사용자의 이메일 가져오기
-    const currentUserEmail = auth.currentUser?.email;
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      const currentUserEmail = currentUser.email;
+      // 사용자 데이터 가져오기
+      const userQuerySnapshot = await getDocs(
+        query(collection(db, "users"), where("email", "==", currentUserEmail))
+      );
+      if (!userQuerySnapshot.empty) {
+        const userData = userQuerySnapshot.docs[0].data() as PaymentType;
+        setUserData(userData);
+        setUserPoint(Number(userData.point));
+      }
 
-    // 현재 사용자의 이메일과 일치하는 사용자만 필터링하여 fetchedUsers에 추가
-    const filteredUser = fetchedUsers.find(
-      (user) => user.email === currentUserEmail
-    );
+      // 쿠폰 데이터 가져오기
+      const couponQuerySnapshot = await getDocs(
+        query(
+          collection(db, "coupon"),
+          where("userEmail", "==", currentUserEmail)
+        )
+      );
+      const couponDataArray: PaymentType[] = [];
+      couponQuerySnapshot.forEach((doc) => {
+        const couponData = doc.data() as PaymentType;
+        couponDataArray.push(couponData);
+      });
 
-    // 필터링된 사용자 목록 설정
-    if (filteredUser !== undefined) {
-      setUserData(filteredUser);
+      setCouponData(couponDataArray);
+    }
+  };
+
+  const onSubmit = async (data: PaymentType) => {
+    // 포인트 관련 로직
+    const inputPoint = Number(form.watch("point"));
+    // 사용할 포인트가 보유 포인트 보다 더 클때
+    if (inputPoint > userPoint) {
+      toast({
+        title: "사용할 포인트가 보유 포인트보다 많습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+    // 사용한 금액이 총 결제금액보다 크거나 같은경우
+    if (totalAmount >= inputPoint) {
+      const newApplyPoint = applyPoint + inputPoint;
+      setUserPoint(userPoint - inputPoint);
+      setApplyPoint(newApplyPoint);
+      setTotalAmount(totalAmount - inputPoint);
+    } else {
+      toast({
+        title: "총 결제금액보다 많이 사용할 수 없습니다.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -94,7 +152,7 @@ const PaymentForm = () => {
               <CardContent className="flex flex-col gap-2">
                 <p className="font-bold">{userData?.username}</p>
                 <p className="text-gray-light">{userData?.phone}</p>
-                <p className="text-[#767678]">{userData?.email}</p>
+                <p className="text-gray-light">{userData?.email}</p>
               </CardContent>
             </Card>
             <Card>
@@ -167,20 +225,18 @@ const PaymentForm = () => {
               </CardHeader>
               <div className="flex">
                 <CardContent>
-                  <Image
-                    src={
-                      Array.isArray(productImage)
-                        ? productImage[0]
-                        : productImage || ""
-                    }
-                    alt="이미지"
-                    width={100}
-                    height={100}
-                  />
+                  {productImage && (
+                    <Image
+                      src={String(productImage)}
+                      alt="이미지"
+                      width={100}
+                      height={100}
+                    />
+                  )}
                 </CardContent>
                 <CardContent className="p-0 pr-6">
                   <p>{productName}</p>
-                  <p className="text-[#1088ED]">
+                  <p className="text-blue-light">
                     {Number(productPrice)?.toLocaleString()}원
                   </p>
                 </CardContent>
@@ -191,27 +247,42 @@ const PaymentForm = () => {
                 <CardTitle className="text-xl">쿠폰/포인트</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>쿠폰</p>
+                <p>보유 쿠폰</p>
                 <FormField
                   control={form.control}
                   name="coupon"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2 w-full">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="선택 안 함" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="1000">1,000원 할인권</SelectItem>
-                          <SelectItem value="3000">3,000원 할인권</SelectItem>
-                          <SelectItem value="5000">5,000원 할인권</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <FormItem className="flex flex-col gap-2">
+                      <div className="flex gap-3">
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="선택 안 함" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {couponData.map((data) => (
+                              <SelectItem
+                                key={data.id}
+                                value={
+                                  data.type === "P"
+                                    ? String(data.discount)
+                                    : String(data.discountAmount)
+                                }
+                              >
+                                {data.couponName}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button>쿠폰적용</Button>
+                      </div>
+                      <CardDescription>
+                        쿠폰은 총 결제금액 10000원 이상부터 사용 가능합니다
+                      </CardDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -219,6 +290,27 @@ const PaymentForm = () => {
               </CardContent>
               <CardContent>
                 <p>포인트</p>
+                <FormField
+                  control={form.control}
+                  name="point"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex gap-3">
+                          <Input {...field} />
+                          <Button type="submit">포인트적용</Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <p>
+                  보유 포인트{" "}
+                  <span className="font-bold">
+                    {userPoint.toLocaleString()}P
+                  </span>
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -235,19 +327,33 @@ const PaymentForm = () => {
               </CardContent>
             </Card>
           </div>
-          <div className="flex flex-col gap-5 m-5 w-1/5">
+          <div className="flex flex-col gap-5 m-5 w-1/6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl">최종 결제금액</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>상품 가격</p>
-                <p>쿠폰 할인</p>
-                <p>포인트 사용</p>
-                <p>배송비</p>
+                <div className="flex">
+                  <div className="space-y-1 text-gray-light">
+                    <p>상품 가격</p>
+                    <p>쿠폰 할인</p>
+                    <p>포인트 사용</p>
+                    <p>배송비</p>
+                  </div>
+                  <div className="space-y-1 ml-auto font-bold text-end">
+                    <p>{Number(productPrice).toLocaleString()}원</p>
+                    <p>쿠폰 할인</p>
+                    <p>-{applyPoint.toLocaleString()}원</p>
+                    <p>+{Number(deliveryCost).toLocaleString()}원</p>
+                  </div>
+                </div>
+                <hr className="w-full border-t border-gray-dark mt-5" />
               </CardContent>
-              <CardFooter>
-                <p>총 결제금액</p>
+              <CardFooter className="flex">
+                <p className="font-bold">총 결제금액</p>
+                <p className="text-blue-light font-bold ml-auto">
+                  {totalAmount.toLocaleString()}원
+                </p>
               </CardFooter>
             </Card>
             <Card>
@@ -273,6 +379,7 @@ const PaymentForm = () => {
             </Card>
           </div>
         </div>
+        <Button>결제하기</Button>
       </form>
     </Form>
   );
