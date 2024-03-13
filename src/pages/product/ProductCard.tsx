@@ -7,7 +7,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { ProductType } from "@/types/type";
 import Image from "next/image";
 
-const ProductForm = () => {
+const ProductCard = () => {
   const router = useRouter();
   const [products, setProducts] = useState<ProductType[]>([]);
 
@@ -65,4 +65,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default ProductCard;

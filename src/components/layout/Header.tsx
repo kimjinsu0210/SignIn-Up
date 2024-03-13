@@ -20,7 +20,7 @@ const Header = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   const [loginState, setLoginState] = useState<boolean>(false);
-  const { setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,9 +29,19 @@ const Header = ({
     });
   }, [router]);
 
+  useEffect(() => {
+    if (resolvedTheme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [resolvedTheme]);
+
   return (
     <div
-      className={`flex justify-around items-center h-20 gap-3 p-6 bg-white ${className}`}
+      className={`flex justify-around items-center h-20 gap-3 p-6 ${
+        resolvedTheme === "dark" ? "bg-gray-900" : "bg-white"
+      } ${className}`}
       {...props}
     >
       <div className="cursor-pointer" onClick={() => router.push("/")}>
@@ -46,7 +56,7 @@ const Header = ({
         {loginState && (
           <>
             <Button
-              onClick={() => router.push("../product/ProductForm")}
+              onClick={() => router.push("../product/ProductCard")}
               variant="outline"
             >
               상품페이지

@@ -5,7 +5,9 @@
 body {
   background-color: #e9ecef;
 }
-
+body.dark {
+  background-color: #000114;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
