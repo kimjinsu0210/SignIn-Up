@@ -43,5 +43,5 @@ export interface PaymentType {
   couponName: string;
   discount: number;
   discountAmount: number;
-  point: number;
+  point: string;
 }

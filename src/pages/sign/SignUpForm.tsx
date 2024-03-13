@@ -119,7 +119,7 @@ const SignUpForm = () => {
           gender: data.gender,
           role: data.role,
           address: `${kakaoAddr} ${data.detailAddr}`,
-          point: 0,
+          point: 10000,
           regDate: nowTime,
         });
         // 신규회원 쿠폰 부여 로직

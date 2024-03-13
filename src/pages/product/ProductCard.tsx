@@ -41,6 +41,7 @@ const ProductCard = () => {
                 productImage: data.productImage,
                 productName: data.productName,
                 productPrice: data.productPrice,
+                deliveryCost: data.deliveryCost,
               },
             });
           }}
