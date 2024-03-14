@@ -29,49 +29,54 @@ const ProductCard = () => {
   };
 
   return (
-    <div className="flex flex-wrap mt-24 ml-60">
-      {products.map((data, index) => (
-        <Card
-          key={index}
-          className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 m-2 p-2 cursor-pointer"
-          onClick={() => {
-            router.push({
-              pathname: "../payment/PaymentForm",
-              query: {
-                productImage: data.productImage,
-                productName: data.productName,
-                productPrice: data.productPrice,
-                deliveryCost: data.deliveryCost,
-              },
-            });
-          }}
-        >
-          <div className="flex flex-col justify-between h-full">
-            <CardHeader>
-              <div>
-                <Image
-                  src={data.productImage}
-                  alt="이미지"
-                  width={400}
-                  height={300}
-                />
-              </div>
-              <CardTitle className="text-lg">{data.productName}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex gap-3">
-              <div>
-                <p>상품 가격</p>
-                <p>배송비</p>
-              </div>
-              <div className="ml-3">
-                <p>{data.productPrice.toLocaleString()}원</p>
-                <p>{data.deliveryCost.toLocaleString()}원</p>
-              </div>
-            </CardContent>
-          </div>
-        </Card>
-      ))}
-    </div>
+    <>
+      <div className="flex justify-center mt-10">
+        <h1 className="text-3xl font-bold">상품 페이지</h1>
+      </div>
+      <div className="flex flex-wrap mt-10 ml-60">
+        {products.map((data, index) => (
+          <Card
+            key={index}
+            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 m-2 p-2 cursor-pointer"
+            onClick={() => {
+              router.push({
+                pathname: "../payment/PaymentForm",
+                query: {
+                  productImage: data.productImage,
+                  productName: data.productName,
+                  productPrice: data.productPrice,
+                  deliveryCost: data.deliveryCost,
+                },
+              });
+            }}
+          >
+            <div className="flex flex-col justify-between h-full">
+              <CardHeader>
+                <div>
+                  <Image
+                    src={data.productImage}
+                    alt="이미지"
+                    width={400}
+                    height={300}
+                  />
+                </div>
+                <CardTitle className="text-lg">{data.productName}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex gap-3">
+                <div>
+                  <p>상품 가격</p>
+                  <p>배송비</p>
+                </div>
+                <div className="ml-3">
+                  <p>{data.productPrice.toLocaleString()}원</p>
+                  <p>{data.deliveryCost.toLocaleString()}원</p>
+                </div>
+              </CardContent>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </>
   );
 };
 

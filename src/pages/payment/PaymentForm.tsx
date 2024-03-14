@@ -181,6 +181,9 @@ const PaymentForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="relative overflow-x-hidden w-full"
       >
+        <div className="flex justify-center p-10 pb-5">
+          <h1 className="text-3xl font-bold">결제 페이지</h1>
+        </div>
         <div className="flex justify-center gap-10">
           <div className="flex flex-col gap-5 m-5 w-1/3">
             <Card>
@@ -323,7 +326,7 @@ const PaymentForm = () => {
                         </Button>
                       </div>
                       <CardDescription>
-                        쿠폰은 총 결제금액 10000원 이상부터 사용 가능합니다
+                        총 결제금액 1만원 이상부터 사용 가능합니다
                       </CardDescription>
                       <FormMessage />
                     </FormItem>
