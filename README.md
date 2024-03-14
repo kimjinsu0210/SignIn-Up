@@ -1,10 +1,12 @@
 # 프로젝트 명: Sign In & Up
 
-Next.js Typescript tailwindCSS 기반의 로그인, 회원가입 페이지를 만들어봤습니다.<br>
-로그인 시 회원정보들이 담긴 carousel 기반의 카드가 나오게 됩니다.<br><br>
-UI를 구성하는 컴포넌트는 shadcn-ui 를 이용했고 회원가입 시 필요한 Form 및 유효성 검사는
+Next.js 기반의 로그인, 회원가입 및 상품결제 페이지를 만들어 봤습니다.<br>
+로그인 시 회원정보가 담긴 Carousel Card가 나오게 됩니다.<br>
+Header 상품 페이지 클릭 시 서비스의 상품들을 볼 수 있습니다.<br>
+상품 클릭 시 해당 상품의 결제페이지로 이동하며 결제를 진행할 수 있습니다.(실제로 결제되지 않습니다)<br>
+UI를 구성하는 컴포넌트는 대부분 shadcn-ui 라이브러리를 이용했고 Form 및 유효성 검사는
 React-hook-form과 Zod를 이용해서 설계했습니다.<br><br>
-백엔드로는 firebase의 auth, firestore(DB) 이용했습니다.
+백엔드로는 firebase의 auth, firestore(DB), storage 이용했습니다.
 
 ## 프로젝트 설정 및 실행
 
