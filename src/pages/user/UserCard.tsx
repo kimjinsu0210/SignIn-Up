@@ -13,16 +13,11 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import { collection, getDocs } from "firebase/firestore";
 import { UserType } from "@/types/type";
-import Autoplay from "embla-carousel-autoplay";
 
 const UserCard = () => {
   const router = useRouter();
   const [users, setUsers] = useState<UserType[]>([]);
   const [loginEmail, setLoginEmail] = useState<string | null>("");
-
-  const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
-  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -53,12 +48,7 @@ const UserCard = () => {
         <br />
         로그인된 회원은 녹색으로 표시됩니다.
       </h1>
-      <Carousel
-        plugins={[plugin.current]}
-        className="w-full max-w-xs"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
-      >
+      <Carousel className="w-full max-w-xs">
         <CarouselContent>
           {users.map((user, index) => (
             <CarouselItem key={index}>
