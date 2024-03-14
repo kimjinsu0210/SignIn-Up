@@ -37,6 +37,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/validators/payment";
 import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { CheckoutPage } from "../sandbox/Checkout";
 
 const PaymentForm = () => {
   const router = useRouter();
@@ -194,7 +195,7 @@ const PaymentForm = () => {
         <div className="flex justify-center p-10 pb-5">
           <h1 className="text-3xl font-bold">결제 페이지</h1>
         </div>
-        <div className="flex justify-center gap-10">
+        <div className="flex justify-center">
           <div className="flex flex-col gap-5 m-5 w-1/3">
             <Card>
               <CardHeader>
@@ -522,8 +523,8 @@ const PaymentForm = () => {
               </CardContent>
             </Card>
           </div>
-          <div className="m-5 w-1/5">
-            <div className="fixed flex flex-col gap-5">
+          <div className="m-5 w-[30%]">
+            <div className="flex flex-col gap-5">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl">최종 결제금액</CardTitle>
@@ -557,20 +558,7 @@ const PaymentForm = () => {
                   <CardTitle className="text-xl">결제 방법</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>신용/체크카드</p>
-                  <p>무통장 입금</p>
-                  <p>핸드폰 결제</p>
-                  <p>카카오페이</p>
-                  <p>법인카드</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">전체동의</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>전체동의</p>
-                  <p>구매조건 확인 및 결제진행에 동의</p>
+                  <CheckoutPage />
                 </CardContent>
               </Card>
             </div>

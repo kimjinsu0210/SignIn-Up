@@ -30,8 +30,8 @@
     "src/pages/payment/payments.router.js",
     "src/pages/payment/payments.controller.js",
     "src/pages/payment/PaymentForm.tsx",
-    "src/pages/payment/sandbox/index.js",
-    "src/pages/payment/sandbox/Checkout.jsx"
-  ],
+    "src/pages/sandbox/index.js",
+    "src/pages/sandbox/Checkout.jsx"
+, "src/pages/payment/sandbox/Payment.jsx", "src/pages/payment/sandbox/Success.jsx", "src/pages/payment/sandbox/server.js", "src/pages/payment/sandbox/payments.service.js", "src/pages/payment/sandbox/payments.router.js", "src/pages/payment/sandbox/payments.controller.js", "src/pages/payment/sandbox/Fail.jsx"  ],
   "exclude": ["node_modules"]
 }
