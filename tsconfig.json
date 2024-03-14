@@ -17,6 +17,21 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/payment/index.js",
+    "src/pages/payment/Fail.jsx",
+    "src/pages/payment/Checkout.jsx",
+    "src/pages/payment/Success.jsx",
+    "src/pages/payment/server.js",
+    "src/pages/payment/payments.service.js",
+    "src/pages/payment/payments.router.js",
+    "src/pages/payment/payments.controller.js",
+    "src/pages/payment/PaymentForm.tsx",
+    "src/pages/payment/sandbox/index.js",
+    "src/pages/payment/sandbox/Checkout.jsx"
+  ],
   "exclude": ["node_modules"]
 }
