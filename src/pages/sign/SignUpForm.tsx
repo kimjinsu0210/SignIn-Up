@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
-import { v4 } from "uuid";
 
 import {
   Card,
@@ -109,9 +108,7 @@ const SignUpForm = () => {
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async () => {
         const nowTime = serverTimestamp();
-        const UUID = v4();
         await addDoc(collection(db, "users"), {
-          id: UUID,
           username: data.username,
           email: data.email,
           phone: data.phone,
@@ -128,10 +125,7 @@ const SignUpForm = () => {
         const type2 = "F";
         const discount = 20;
         const discount2 = 5000;
-        const UUID2 = v4();
-        const UUID3 = v4();
         await addDoc(collection(db, "coupon"), {
-          id: UUID2,
           type,
           couponName: "신규회원 쿠폰 20% 할인",
           discount: type === "P" ? discount : null,
@@ -140,7 +134,6 @@ const SignUpForm = () => {
           createTime: nowTime,
         });
         await addDoc(collection(db, "coupon"), {
-          id: UUID3,
           type: type2,
           couponName: "5000원 할인권",
           discount: type2 === "F" ? null : discount2,
