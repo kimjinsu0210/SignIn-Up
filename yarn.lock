@@ -3703,11 +3703,6 @@ ember-rfc176-data@^0.3.17:
   resolved "https://registry.npmjs.org/ember-rfc176-data/-/ember-rfc176-data-0.3.18.tgz"
   integrity sha512-JtuLoYGSjay1W3MQAxt3eINWXNYYQliK90tLwtb8aeCuQK8zKGCRbBodVIrkcTqshULMnRuTOS6t1P7oQk3g6Q==
 
-embla-carousel-autoplay@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/embla-carousel-autoplay/-/embla-carousel-autoplay-8.0.0.tgz"
-  integrity sha512-FWHhZULH5+ydg7fiabwQppCDoTMi8pbMC20lmVytoXn7hH2KAhXHc/8yCUb3yToqMduCN6xPKUONtgzBqz3RZg==
-
 embla-carousel-react@^8.0.0:
   version "8.0.0"
   resolved "https://registry.npmjs.org/embla-carousel-react/-/embla-carousel-react-8.0.0.tgz"
