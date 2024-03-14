@@ -43,20 +43,23 @@ const PaymentForm = () => {
     router.query;
   const sumProDeliv = Number(productPrice ?? 0) + Number(deliveryCost ?? 0);
   const [userData, setUserData] = useState<PaymentType | null>(null);
-  const [userPoint, setUserPoint] = useState<number>(0);
-  const [applyPoint, setApplyPoint] = useState<number>(0);
-  const [couponData, setCouponData] = useState<PaymentType[]>([]);
   const [directInput, setDirectInput] = useState<boolean>(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  // 쿠폰 관련
+  const [couponData, setCouponData] = useState<PaymentType[]>([]);
+  // 포인트 관련
+  const [userPoint, setUserPoint] = useState<number>(0);
+  const [applyPoint, setApplyPoint] = useState<number>(0);
 
   const form = useForm<PaymentType>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       deliveryMemo: "",
       point: "",
+      coupon: "",
     },
   });
-  console.log("form :", form.watch("point"));
+  console.log("form :", form.watch());
 
   useEffect(() => {
     setTotalAmount(sumProDeliv);
@@ -113,8 +116,12 @@ const PaymentForm = () => {
   };
 
   const onSubmit = async (data: PaymentType) => {
+    console.log("data :", data);
+  };
+
+  const applyPointSubmit = (data: PaymentType) => {
     // 포인트 관련 로직
-    const inputPoint = Number(form.watch("point"));
+    const inputPoint = Number(data.point);
     // 사용할 포인트가 보유 포인트 보다 더 클때
     if (inputPoint > userPoint) {
       toast({
@@ -134,9 +141,33 @@ const PaymentForm = () => {
         title: "총 결제금액보다 많이 사용할 수 없습니다.",
         variant: "destructive",
       });
+      return;
     }
   };
 
+  const applyCouponSubmit = (data: PaymentType) => {
+    if (!data.coupon) {
+      return;
+    }
+    if (totalAmount < 10000) {
+      toast({
+        title: "쿠폰은 총 결제금액 1만원 이상부터 사용 가능합니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+    let couponValue = Number(data.coupon.slice(1));
+
+    // 정률제인 경우
+    if (data.coupon.startsWith("*")) {
+      couponValue = (100 - couponValue) / 100;
+      setTotalAmount(totalAmount * couponValue);
+    }
+    // 정액제인 경우
+    else if (data.coupon.startsWith("-")) {
+      setTotalAmount(totalAmount - couponValue);
+    }
+  };
   return (
     <Form {...form}>
       <form
@@ -246,7 +277,7 @@ const PaymentForm = () => {
               <CardHeader>
                 <CardTitle className="text-xl">쿠폰/포인트</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pb-0">
                 <p>보유 쿠폰</p>
                 <FormField
                   control={form.control}
@@ -269,8 +300,8 @@ const PaymentForm = () => {
                                 key={data.id}
                                 value={
                                   data.type === "P"
-                                    ? String(data.discount)
-                                    : String(data.discountAmount)
+                                    ? String(`*${data.discount}`)
+                                    : String(`-${data.discountAmount}`)
                                 }
                               >
                                 {data.couponName}
@@ -278,7 +309,11 @@ const PaymentForm = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <Button>쿠폰적용</Button>
+                        <Button
+                          onClick={() => applyCouponSubmit(form.getValues())}
+                        >
+                          쿠폰적용
+                        </Button>
                       </div>
                       <CardDescription>
                         쿠폰은 총 결제금액 10000원 이상부터 사용 가능합니다
@@ -297,8 +332,12 @@ const PaymentForm = () => {
                     <FormItem>
                       <FormControl>
                         <div className="flex gap-3">
-                          <Input {...field} />
-                          <Button type="submit">포인트적용</Button>
+                          <Input placeholder="직접 입력" {...field} />
+                          <Button
+                            onClick={() => applyPointSubmit(form.getValues())}
+                          >
+                            포인트적용
+                          </Button>
                         </div>
                       </FormControl>
                       <FormMessage />

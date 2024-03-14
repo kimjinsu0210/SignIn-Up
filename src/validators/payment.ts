@@ -7,4 +7,5 @@ export const paymentSchema = z.object({
   deliveryMemo: z
     .string()
     .max(100, "배송 메모는 100자 이하만 입력이 가능합니다."),
+  coupon: z.string(),
 });
