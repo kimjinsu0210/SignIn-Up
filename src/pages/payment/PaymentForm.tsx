@@ -36,7 +36,6 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/validators/payment";
 import { toast } from "@/components/ui/use-toast";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 const PaymentForm = () => {
