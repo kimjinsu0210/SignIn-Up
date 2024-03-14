@@ -8,9 +8,7 @@ body {
 body.dark {
   background-color: #000114;
 }
-body.blue {
-  background-color: #000114;
-}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
