@@ -44,4 +44,9 @@ export interface PaymentType {
   discount: number;
   discountAmount: number;
   point: string;
+  isIndividualReceipt: boolean;
+  isCompanyReceipt: boolean;
+  individualSelect: string;
+  companySelect: string;
+  receiptValue: string;
 }
