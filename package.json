@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -21,14 +21,19 @@
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.5",
     "@tosspayments/payment-widget-sdk": "^0.10.2",
+    "accepts": "^1.3.8",
     "add": "^2.0.6",
+    "array-flatten": "^3.0.0",
+    "body-parser": "^1.20.2",
     "button": "^1.1.1",
     "card": "^2.5.4",
     "carousel": "^0.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "cors": "^2.8.5",
     "create-next-app": "^14.1.1",
     "embla-carousel-react": "^8.0.0",
+    "express": "^4.18.3",
     "firebase": "^10.8.1",
     "form": "^0.2.4",
     "framer-motion": "^11.0.8",
@@ -38,6 +43,7 @@
     "lucide-react": "^0.344.0",
     "next": "14.1.1",
     "next-themes": "^0.2.1",
+    "node-fetch": "^2.7.0",
     "radio-group": "^0.0.2",
     "react": "^18",
     "react-daum-postcode": "^3.1.3",
@@ -61,6 +67,7 @@
     "eslint-config-next": "14.1.1",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack-node-externals": "^3.0.0"
   }
 }
