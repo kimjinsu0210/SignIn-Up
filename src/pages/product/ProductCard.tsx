@@ -31,7 +31,7 @@ const ProductCard = () => {
   return (
     <>
       <div className="flex justify-center mt-10">
-        <h1 className="text-3xl font-bold text-gray-light">상품 페이지</h1>
+        <h1 className="text-3xl font-bold ">상품 페이지</h1>
       </div>
       <div className="flex flex-wrap mt-10 ml-60">
         {products.map((data, index) => (
