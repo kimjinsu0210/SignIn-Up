@@ -192,7 +192,7 @@ const PaymentForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="relative overflow-x-hidden w-full mb-20"
       >
-        <div className="flex justify-center p-10 pb-5">
+        <div className="flex justify-center p-10 pb-5 ">
           <h1 className="text-3xl font-bold">결제 페이지</h1>
         </div>
         <div className="flex justify-center">
@@ -524,7 +524,7 @@ const PaymentForm = () => {
             </Card>
           </div>
           <div className="m-5 w-[30%]">
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 ">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl">최종 결제금액</CardTitle>
