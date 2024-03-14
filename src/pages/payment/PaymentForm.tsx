@@ -373,59 +373,60 @@ const PaymentForm = () => {
               </CardContent>
             </Card>
           </div>
-          <div className="flex flex-col gap-5 m-5 w-1/6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">최종 결제금액</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex">
-                  <div className="space-y-1 text-gray-light">
-                    <p>상품 가격</p>
-                    <p>쿠폰 할인</p>
-                    <p>포인트 사용</p>
-                    <p>배송비</p>
+          <div className="m-5 w-1/5">
+            <div className="fixed flex flex-col gap-5">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">최종 결제금액</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex">
+                    <div className="space-y-1 text-gray-light">
+                      <p>상품 가격</p>
+                      <p>쿠폰 할인</p>
+                      <p>포인트 사용</p>
+                      <p>배송비</p>
+                    </div>
+                    <div className="space-y-1 ml-auto font-bold text-end">
+                      <p>{Number(productPrice).toLocaleString()}원</p>
+                      <p>-{couponDiscount.toLocaleString()}원</p>
+                      <p>-{applyPoint.toLocaleString()}원</p>
+                      <p>+{Number(deliveryCost).toLocaleString()}원</p>
+                    </div>
                   </div>
-                  <div className="space-y-1 ml-auto font-bold text-end">
-                    <p>{Number(productPrice).toLocaleString()}원</p>
-                    <p>-{couponDiscount.toLocaleString()}원</p>
-                    <p>-{applyPoint.toLocaleString()}원</p>
-                    <p>+{Number(deliveryCost).toLocaleString()}원</p>
-                  </div>
-                </div>
-                <hr className="w-full border-t border-gray-dark mt-5" />
-              </CardContent>
-              <CardFooter className="flex">
-                <p className="font-bold">총 결제금액</p>
-                <p className="text-blue-light font-bold ml-auto">
-                  {totalAmount.toLocaleString()}원
-                </p>
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">결제 방법</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>신용/체크카드</p>
-                <p>무통장 입금</p>
-                <p>핸드폰 결제</p>
-                <p>카카오페이</p>
-                <p>법인카드</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">전체동의</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>전체동의</p>
-                <p>구매조건 확인 및 결제진행에 동의</p>
-              </CardContent>
-            </Card>
+                  <hr className="w-full border-t border-gray-dark mt-5" />
+                </CardContent>
+                <CardFooter className="flex">
+                  <p className="font-bold">총 결제금액</p>
+                  <p className="text-blue-light font-bold ml-auto">
+                    {totalAmount.toLocaleString()}원
+                  </p>
+                </CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">결제 방법</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>신용/체크카드</p>
+                  <p>무통장 입금</p>
+                  <p>핸드폰 결제</p>
+                  <p>카카오페이</p>
+                  <p>법인카드</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">전체동의</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>전체동의</p>
+                  <p>구매조건 확인 및 결제진행에 동의</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-        <Button>결제하기</Button>
       </form>
     </Form>
   );
