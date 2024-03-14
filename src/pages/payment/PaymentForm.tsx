@@ -41,12 +41,17 @@ const PaymentForm = () => {
   const router = useRouter();
   const { productImage, productName, productPrice, deliveryCost } =
     router.query;
+  // 상품가격 + 배송비
   const sumProDeliv = Number(productPrice ?? 0) + Number(deliveryCost ?? 0);
   const [userData, setUserData] = useState<PaymentType | null>(null);
-  const [directInput, setDirectInput] = useState<boolean>(false);
+  const [isDirectInput, setIsDirectInput] = useState<boolean>(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   // 쿠폰 관련
   const [couponData, setCouponData] = useState<PaymentType[]>([]);
+  const [isCouponApplied, setIsCouponApplied] = useState<boolean>(false);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  console.log("couponDiscount :", couponDiscount);
+
   // 포인트 관련
   const [userPoint, setUserPoint] = useState<number>(0);
   const [applyPoint, setApplyPoint] = useState<number>(0);
@@ -64,15 +69,6 @@ const PaymentForm = () => {
   useEffect(() => {
     setTotalAmount(sumProDeliv);
   }, [sumProDeliv]);
-
-  useEffect(() => {
-    if (totalAmount < 0) {
-      toast({
-        title: "총 결제금액은 마이너스가 될 수 없습니다.",
-        variant: "destructive",
-      });
-    }
-  }, [totalAmount]);
 
   useEffect(() => {
     // 인증 상태 변경시마다 실행되는 함수 설정
@@ -149,9 +145,16 @@ const PaymentForm = () => {
     if (!data.coupon) {
       return;
     }
+    if (isCouponApplied) {
+      toast({
+        title: "이미 쿠폰이 적용되었습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (totalAmount < 10000) {
       toast({
-        title: "쿠폰은 총 결제금액 1만원 이상부터 사용 가능합니다.",
+        title: "총 결제금액 1만원 이상부터 사용 가능합니다.",
         variant: "destructive",
       });
       return;
@@ -160,14 +163,18 @@ const PaymentForm = () => {
 
     // 정률제인 경우
     if (data.coupon.startsWith("*")) {
-      couponValue = (100 - couponValue) / 100;
-      setTotalAmount(totalAmount * couponValue);
+      const discountedAmount = (totalAmount * couponValue) / 100;
+      setTotalAmount(totalAmount - discountedAmount);
+      setCouponDiscount(discountedAmount);
     }
     // 정액제인 경우
     else if (data.coupon.startsWith("-")) {
       setTotalAmount(totalAmount - couponValue);
+      setCouponDiscount(couponValue);
     }
+    setIsCouponApplied(true);
   };
+
   return (
     <Form {...form}>
       <form
@@ -187,7 +194,7 @@ const PaymentForm = () => {
               </CardContent>
             </Card>
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-0">
                 <CardTitle className="text-xl">배송지</CardTitle>
               </CardHeader>
               <CardContent className="p-3 pl-6">
@@ -202,9 +209,9 @@ const PaymentForm = () => {
                       onValueChange={(value) => {
                         field.onChange(value);
                         if (value === "직접 입력하기") {
-                          setDirectInput(true);
+                          setIsDirectInput(true);
                         } else {
-                          setDirectInput(false);
+                          setIsDirectInput(false);
                         }
                       }}
                       defaultValue={field.value}
@@ -233,7 +240,7 @@ const PaymentForm = () => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    {directInput && (
+                    {isDirectInput && (
                       <FormControl>
                         <Textarea
                           placeholder="배송 메모를 입력해주세요"
@@ -381,7 +388,7 @@ const PaymentForm = () => {
                   </div>
                   <div className="space-y-1 ml-auto font-bold text-end">
                     <p>{Number(productPrice).toLocaleString()}원</p>
-                    <p>쿠폰 할인</p>
+                    <p>-{couponDiscount.toLocaleString()}원</p>
                     <p>-{applyPoint.toLocaleString()}원</p>
                     <p>+{Number(deliveryCost).toLocaleString()}원</p>
                   </div>
