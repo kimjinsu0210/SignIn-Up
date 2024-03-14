@@ -36,6 +36,8 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/validators/payment";
 import { toast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const PaymentForm = () => {
   const router = useRouter();
@@ -43,18 +45,24 @@ const PaymentForm = () => {
     router.query;
   // 상품가격 + 배송비
   const sumProDeliv = Number(productPrice ?? 0) + Number(deliveryCost ?? 0);
+
+  // 유저 데이터
   const [userData, setUserData] = useState<PaymentType | null>(null);
+
+  // 배송메모 직접입력 토글
   const [isDirectInput, setIsDirectInput] = useState<boolean>(false);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
+
   // 쿠폰 관련
   const [couponData, setCouponData] = useState<PaymentType[]>([]);
   const [isCouponApplied, setIsCouponApplied] = useState<boolean>(false);
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
-  console.log("couponDiscount :", couponDiscount);
 
   // 포인트 관련
   const [userPoint, setUserPoint] = useState<number>(0);
   const [applyPoint, setApplyPoint] = useState<number>(0);
+
+  // 총 결제금액
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const form = useForm<PaymentType>({
     resolver: zodResolver(paymentSchema),
@@ -62,8 +70,12 @@ const PaymentForm = () => {
       deliveryMemo: "",
       point: "",
       coupon: "",
+      receiptValue: "",
     },
   });
+  const isIndividualReceipt = form.watch("isIndividualReceipt");
+  const isCompanyReceipt = form.watch("isCompanyReceipt");
+
   console.log("form :", form.watch());
 
   useEffect(() => {
@@ -174,12 +186,11 @@ const PaymentForm = () => {
     }
     setIsCouponApplied(true);
   };
-
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="relative overflow-x-hidden w-full"
+        className="relative overflow-x-hidden w-full mb-20"
       >
         <div className="flex justify-center p-10 pb-5">
           <h1 className="text-3xl font-bold">결제 페이지</h1>
@@ -365,14 +376,150 @@ const PaymentForm = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl">현금영수증</CardTitle>
-                <CardDescription>Card Description</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>현금영수증 신청</p>
-              </CardContent>
-              <CardContent>
-                <p>소득공제</p>
-                <p>지출증빙</p>
+                <p className="my-3">현금영수증 신청</p>
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="isIndividualReceipt"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">소득공제</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            onClick={() => {
+                              form.setValue("isCompanyReceipt", false);
+                              form.setValue("companySelect", "");
+                              form.setValue("receiptValue", "");
+                            }}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  {isIndividualReceipt && (
+                    <div className="flex gap-3">
+                      <FormField
+                        control={form.control}
+                        name="individualSelect"
+                        render={({ field }) => (
+                          <FormItem className="w-48">
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="선택하세요" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="phone">
+                                  휴대폰번호
+                                </SelectItem>
+                                <SelectItem value="card">
+                                  현금영수증카드
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="receiptValue"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormControl>
+                              <Input
+                                placeholder="숫자만 입력해주세요"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="isCompanyReceipt"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">지출증빙</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            onClick={() => {
+                              form.setValue("isIndividualReceipt", false);
+                              form.setValue("individualSelect", "");
+                              form.setValue("receiptValue", "");
+                            }}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  {isCompanyReceipt && (
+                    <div className="flex gap-3">
+                      <FormField
+                        control={form.control}
+                        name="companySelect"
+                        render={({ field }) => (
+                          <FormItem className="w-48">
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="선택하세요" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="businessNum">
+                                  사업자번호
+                                </SelectItem>
+                                <SelectItem value="card">
+                                  현금영수증카드
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="receiptValue"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormControl>
+                              <Input
+                                placeholder="숫자만 입력해주세요"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
