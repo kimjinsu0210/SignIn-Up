@@ -20,14 +20,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { auth, db } from "../../api/firebaseSDK";
-import { addDoc, collection } from "firebase/firestore";
-import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { FirstStep, LastStep, StepButton } from "./index";
 import { addCoupon, addUserInDB } from "@/pages/api/auth";
+import { auth } from "@/pages/api/firebaseSDK";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -109,37 +105,6 @@ const SignUpForm = () => {
       }
     }
   };
-
-  // const addUserInDB = async (data: RegisterType, nowTime: Date) => {
-  //   createUserWithEmailAndPassword(auth, data.email, data.password);
-  //   await addDoc(collection(db, "users"), {
-  //     username: data.username,
-  //     email: data.email,
-  //     phone: data.phone,
-  //     birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
-  //     gender: data.gender,
-  //     role: data.role,
-  //     address: `${kakaoAddr} ${data.detailAddr}`,
-  //     point: 10000,
-  //     regDate: nowTime,
-  //   });
-  // };
-
-  // const addCoupon = async (
-  //   type: string,
-  //   discount: number,
-  //   data: RegisterType,
-  //   nowTime: Date
-  // ) => {
-  //   await addDoc(collection(db, "coupon"), {
-  //     type,
-  //     couponName: type === "P" ? "신규회원 쿠폰 20% 할인" : "5000원 할인권",
-  //     discount: type === "P" ? discount : null,
-  //     discountAmount: type === "P" ? null : discount,
-  //     userEmail: data.email,
-  //     createTime: nowTime,
-  //   });
-  // };
 
   return (
     <Layout>

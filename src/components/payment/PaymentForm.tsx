@@ -26,7 +26,7 @@ import {
 
 import Image from "next/image";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../api/firebaseSDK";
+import { auth, db } from "../../pages/api/firebaseSDK";
 import { PaymentType } from "@/types/type";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useForm } from "react-hook-form";
@@ -37,7 +37,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/validators/payment";
 import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
-import { CheckoutPage } from "../../components/Checkout";
+import { CheckoutPage } from "../toss/Checkout";
 
 const PaymentForm = () => {
   const router = useRouter();

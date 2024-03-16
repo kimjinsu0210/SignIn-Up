@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { auth } from "../../api/firebaseSDK";
+import { auth } from "@/pages/api/firebaseSDK";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
