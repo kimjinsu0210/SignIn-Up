@@ -19,11 +19,11 @@ import { registerSchema } from "@/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { onAuthStateChanged } from "firebase/auth";
 import { FirstStep, LastStep, StepButton } from "./index";
 import { addCoupon, addUserInDB } from "@/pages/api/auth";
-import { auth } from "@/pages/api/firebaseSDK";
+import { useRouter } from "next/router";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../api/firebaseSDK";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -43,7 +43,7 @@ const SignUpForm = () => {
 
     // 로그인 상태일 때 router
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) router.push("../../user/UserCard");
+      if (user) router.push("../user/UserCard");
     });
 
     // Cleanup 함수
@@ -91,6 +91,7 @@ const SignUpForm = () => {
       // coupon 관련 데이터 DB 저장
       await addCoupon("P", discountRate, data, nowTime);
       await addCoupon("F", discountAmount, data, nowTime);
+      router.push("../user/UserCard");
       toast({
         title: "회원가입 완료",
       });
@@ -128,7 +129,7 @@ const SignUpForm = () => {
               />
               {/* 두번째 Step */}
               <LastStep form={form} step={step} />
-              {/* Step 버튼 */}
+              {/* Step 처리 버튼 */}
               <StepButton
                 form={form}
                 step={step}

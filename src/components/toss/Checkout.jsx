@@ -3,7 +3,7 @@ import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
 
 const generateRandomString = () => window.btoa(Math.random()).slice(0, 20);
 
-export function CheckoutPage(value) {
+const CheckoutPage = (value) => {
   const paymentWidgetRef = useRef(null);
   const paymentMethodsWidgetRef = useRef(null);
   const agreementWidgetRef = useRef(null);
@@ -85,4 +85,6 @@ export function CheckoutPage(value) {
       </div>
     </div>
   );
-}
+};
+
+export default CheckoutPage;

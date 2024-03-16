@@ -26,7 +26,7 @@ import {
 
 import Image from "next/image";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../../pages/api/firebaseSDK";
+import { auth, db } from "../api/firebaseSDK";
 import { PaymentType } from "@/types/type";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useForm } from "react-hook-form";
@@ -37,30 +37,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/validators/payment";
 import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
-import { CheckoutPage } from "./toss/Checkout";
+import { CheckoutPage } from "@/components/toss";
 
 const PaymentForm = () => {
   const router = useRouter();
+  // 결제상품정보
   const { productImage, productName, productPrice, deliveryCost } =
     router.query;
   // 상품가격 + 배송비
   const sumProDeliv = Number(productPrice ?? 0) + Number(deliveryCost ?? 0);
-
   // 유저 데이터
   const [userData, setUserData] = useState<PaymentType | null>(null);
-
   // 배송메모 직접입력 토글
   const [isDirectInput, setIsDirectInput] = useState<boolean>(false);
-
   // 쿠폰 관련
   const [couponData, setCouponData] = useState<PaymentType[]>([]);
   const [isCouponApplied, setIsCouponApplied] = useState<boolean>(false);
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
-
   // 포인트 관련
   const [userPoint, setUserPoint] = useState<number>(0);
   const [applyPoint, setApplyPoint] = useState<number>(0);
-
   // 총 결제금액
   const [totalAmount, setTotalAmount] = useState<number>(0);
 
@@ -81,7 +77,6 @@ const PaymentForm = () => {
   }, [sumProDeliv]);
 
   useEffect(() => {
-    // 인증 상태 변경시마다 실행되는 함수 설정
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
       fetchData();
@@ -121,14 +116,9 @@ const PaymentForm = () => {
     }
   };
 
-  const onSubmit = async (data: PaymentType) => {
-    console.log("data :", data);
-  };
-
   const applyPointSubmit = (data: PaymentType) => {
-    // 포인트 관련 로직
     const inputPoint = Number(data.point);
-    // 사용할 포인트가 보유 포인트 보다 더 클때
+    // 입력한 포인트가 보유 포인트 보다 더 클때
     if (inputPoint > userPoint) {
       toast({
         title: "사용할 포인트가 보유 포인트보다 많습니다.",
@@ -136,19 +126,19 @@ const PaymentForm = () => {
       });
       return;
     }
-    // 사용한 금액이 총 결제금액보다 크거나 같은경우
-    if (totalAmount >= inputPoint) {
-      const newApplyPoint = applyPoint + inputPoint;
-      setUserPoint(userPoint - inputPoint);
-      setApplyPoint(newApplyPoint);
-      setTotalAmount(totalAmount - inputPoint);
-    } else {
+    // 입력한 포인트가 총 결제금액보다 작을 때
+    if (totalAmount < inputPoint) {
       toast({
         title: "총 결제금액보다 많이 사용할 수 없습니다.",
         variant: "destructive",
       });
       return;
     }
+
+    const newApplyPoint = applyPoint + inputPoint;
+    setUserPoint(userPoint - inputPoint);
+    setApplyPoint(newApplyPoint);
+    setTotalAmount(totalAmount - inputPoint);
   };
 
   const applyCouponSubmit = (data: PaymentType) => {
@@ -184,6 +174,11 @@ const PaymentForm = () => {
     }
     setIsCouponApplied(true);
   };
+
+  const onSubmit = async (data: PaymentType) => {
+    console.log("data :", data);
+  };
+
   return (
     <Form {...form}>
       <form
@@ -376,7 +371,6 @@ const PaymentForm = () => {
                 <CardTitle className="text-xl">현금영수증</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="my-3">현금영수증 신청</p>
                 <div>
                   <FormField
                     control={form.control}

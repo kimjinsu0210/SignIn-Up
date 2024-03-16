@@ -20,14 +20,9 @@ const Header = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   const [loginState, setLoginState] = useState<boolean>(false);
+  console.log("loginState :", loginState);
   const { setTheme, resolvedTheme } = useTheme();
   const router = useRouter();
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) setLoginState(true);
-    });
-  }, [router]);
 
   useEffect(() => {
     if (resolvedTheme === "dark") {
@@ -35,6 +30,9 @@ const Header = ({
     } else {
       document.body.classList.remove("dark");
     }
+    onAuthStateChanged(auth, (user) => {
+      if (user) setLoginState(true);
+    });
   }, [resolvedTheme]);
 
   return (
@@ -57,16 +55,22 @@ const Header = ({
           <>
             <Button
               onClick={() => router.push("../product/ProductCard")}
-              variant="outline"
+              variant="ghost"
             >
               상품페이지
+            </Button>
+            <Button
+              onClick={() => router.push("../user/UserCard")}
+              variant="ghost"
+            >
+              유저페이지
             </Button>
             <Button
               onClick={async () => {
                 await signOut(auth);
                 setLoginState(false);
               }}
-              variant="outline"
+              variant="destructive"
             >
               로그아웃
             </Button>

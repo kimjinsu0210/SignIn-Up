@@ -18,11 +18,11 @@ interface StepButtonProps {
 }
 
 const StepButton = ({ form, step, kakaoAddr, setStep }: StepButtonProps) => {
+  console.log("kakaoAddr :", kakaoAddr);
   const router = useRouter();
 
   const nextStepHandler = async () => {
     // 카카오 주소 조합
-    form.setValue("address", `${kakaoAddr} ${form.watch("address")}`);
     // 카카오 주소 유효성 검사
     if (kakaoAddr === "") {
       toast({
@@ -31,6 +31,7 @@ const StepButton = ({ form, step, kakaoAddr, setStep }: StepButtonProps) => {
       });
       return;
     }
+    form.setValue("address", `${kakaoAddr} ${form.watch("address")}`);
 
     const userData: (keyof UserType)[] = [
       "phone",
