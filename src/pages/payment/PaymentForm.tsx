@@ -558,7 +558,7 @@ const PaymentForm = () => {
                   <CardTitle className="text-xl">결제 방법</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CheckoutPage />
+                  <CheckoutPage totalAmount={totalAmount} />
                 </CardContent>
               </Card>
             </div>
