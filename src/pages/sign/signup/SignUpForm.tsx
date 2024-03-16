@@ -21,13 +21,13 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { auth, db } from "../../api/firebaseSDK";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
-import { UserType } from "@/types/type";
 import { FirstStep, LastStep, StepButton } from "./index";
+import { addCoupon, addUserInDB } from "@/pages/api/auth";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -68,14 +68,15 @@ const SignUpForm = () => {
       birthMonth: "",
       birthDay: "",
       gender: "",
-      detailAddr: "",
+      address: "",
       password: "",
       confirmPassword: "",
     },
   });
+
   // 계정 생성 핸들러
-  const onSubmit = async (data: RegisterType) => {
-    // 비밀번호 비교 로직
+  const createUserHandler = async (data: RegisterType) => {
+    // 비밀번호 유효성 검사
     const { password, confirmPassword } = data;
     if (password !== confirmPassword) {
       toast({
@@ -85,60 +86,60 @@ const SignUpForm = () => {
       });
       return;
     }
-    //auth 및 firestore 생성
-    createUserWithEmailAndPassword(auth, data.email, data.password)
-      .then(async () => {
-        const nowTime = serverTimestamp();
-        await addDoc(collection(db, "users"), {
-          username: data.username,
-          email: data.email,
-          phone: data.phone,
-          birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
-          gender: data.gender,
-          role: data.role,
-          address: `${kakaoAddr} ${data.detailAddr}`,
-          point: 10000,
-          regDate: nowTime,
-        });
-        // 신규회원 쿠폰 부여 로직
-        // 쿠폰 type에서 P는 정률제 F는 정액제 약자
-        const type = "P";
-        const type2 = "F";
-        const discount = 20;
-        const discount2 = 5000;
-        await addDoc(collection(db, "coupon"), {
-          type,
-          couponName: "신규회원 쿠폰 20% 할인",
-          discount: type === "P" ? discount : null,
-          discountAmount: type === "P" ? null : discount,
-          userEmail: data.email,
-          createTime: nowTime,
-        });
-        await addDoc(collection(db, "coupon"), {
-          type: type2,
-          couponName: "5000원 할인권",
-          discount: type2 === "F" ? null : discount2,
-          discountAmount: type2 === "F" ? discount2 : null,
-          userEmail: data.email,
-          createTime: nowTime,
-        });
-        toast({
-          title: "회원가입 완료",
-        });
-      })
-      .catch((error) => {
-        //auth 유효성 검사
-        const errorCode = error.code;
-        if (errorCode === "auth/email-already-in-use") {
-          toast({
-            title: "이미 존재하는 회원입니다.",
-            variant: "destructive",
-            action: <ToastAction altText="Try again">다시 입력</ToastAction>,
-          });
-          return;
-        }
+    try {
+      const nowTime = new Date();
+      const discountRate = 20;
+      const discountAmount = 5000;
+      //auth 및 firestore 회원정보 저장
+      await addUserInDB(data, nowTime);
+      // coupon 관련 데이터 DB 저장
+      await addCoupon("P", discountRate, data, nowTime);
+      await addCoupon("F", discountAmount, data, nowTime);
+      toast({
+        title: "회원가입 완료",
       });
+    } catch (error: any) {
+      const errorCode = error.code;
+      if (errorCode === "auth/email-already-in-use") {
+        toast({
+          title: "이미 존재하는 회원입니다.",
+          variant: "destructive",
+          action: <ToastAction altText="Try again">다시 입력</ToastAction>,
+        });
+      }
+    }
   };
+
+  // const addUserInDB = async (data: RegisterType, nowTime: Date) => {
+  //   createUserWithEmailAndPassword(auth, data.email, data.password);
+  //   await addDoc(collection(db, "users"), {
+  //     username: data.username,
+  //     email: data.email,
+  //     phone: data.phone,
+  //     birth: `${data.birthYear}-${data.birthMonth}-${data.birthDay}`,
+  //     gender: data.gender,
+  //     role: data.role,
+  //     address: `${kakaoAddr} ${data.detailAddr}`,
+  //     point: 10000,
+  //     regDate: nowTime,
+  //   });
+  // };
+
+  // const addCoupon = async (
+  //   type: string,
+  //   discount: number,
+  //   data: RegisterType,
+  //   nowTime: Date
+  // ) => {
+  //   await addDoc(collection(db, "coupon"), {
+  //     type,
+  //     couponName: type === "P" ? "신규회원 쿠폰 20% 할인" : "5000원 할인권",
+  //     discount: type === "P" ? discount : null,
+  //     discountAmount: type === "P" ? null : discount,
+  //     userEmail: data.email,
+  //     createTime: nowTime,
+  //   });
+  // };
 
   return (
     <Layout>
@@ -150,7 +151,7 @@ const SignUpForm = () => {
         <CardContent>
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(createUserHandler)}
               className="relative overflow-x-hidden w-full"
             >
               {/* 첫번째 Step */}
@@ -160,7 +161,7 @@ const SignUpForm = () => {
                 kakaoAddr={kakaoAddr}
                 setKakaoAddr={setKakaoAddr}
               />
-              {/* 마지막 Step */}
+              {/* 두번째 Step */}
               <LastStep form={form} step={step} />
               {/* Step 버튼 */}
               <StepButton

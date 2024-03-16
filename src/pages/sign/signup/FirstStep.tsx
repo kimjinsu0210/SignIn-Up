@@ -226,7 +226,7 @@ const FirstStep = ({ form, kakaoAddr, setKakaoAddr, step }: FirstStepProps) => {
         {/* 주소 입력란 */}
         <FormField
           control={form.control}
-          name="detailAddr"
+          name="address"
           render={({ field }) => (
             <FormItem>
               <FormLabel>주소</FormLabel>

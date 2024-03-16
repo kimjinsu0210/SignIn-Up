@@ -20,7 +20,7 @@ export interface UserType {
   birthMonth: string;
   birthDay: string;
   gender: string;
-  detailAddr: string;
+  address: string;
 }
 
 export interface ProductType {

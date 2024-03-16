@@ -21,6 +21,8 @@ const StepButton = ({ form, step, kakaoAddr, setStep }: StepButtonProps) => {
   const router = useRouter();
 
   const nextStepHandler = async () => {
+    // 카카오 주소 조합
+    form.setValue("address", `${kakaoAddr} ${form.watch("address")}`);
     // 카카오 주소 유효성 검사
     if (kakaoAddr === "") {
       toast({
@@ -39,11 +41,11 @@ const StepButton = ({ form, step, kakaoAddr, setStep }: StepButtonProps) => {
       "birthYear",
       "birthMonth",
       "birthDay",
-      "detailAddr",
+      "address",
     ];
 
     await form.trigger(userData);
-    // 카카오 주소와 비밀번호를 제외한 form 데이터 유효성 검사
+    // 첫번째 Step 유효성 검사
     for (const field of userData) {
       const fieldState = form.getFieldState(field);
       if (!fieldState.isDirty || fieldState.invalid) return;
@@ -70,9 +72,7 @@ const StepButton = ({ form, step, kakaoAddr, setStep }: StepButtonProps) => {
       >
         로그인 페이지로
       </Button>
-      <Button className={cn({ hidden: step === 0 })} type="submit">
-        계정 등록하기
-      </Button>
+      <Button className={cn({ hidden: step === 0 })}>계정 등록하기</Button>
       <Button
         type="button"
         variant={"outline"}
