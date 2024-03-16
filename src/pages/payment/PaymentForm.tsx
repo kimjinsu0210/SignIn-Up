@@ -76,8 +76,6 @@ const PaymentForm = () => {
   const isIndividualReceipt = form.watch("isIndividualReceipt");
   const isCompanyReceipt = form.watch("isCompanyReceipt");
 
-  console.log("form :", form.watch());
-
   useEffect(() => {
     setTotalAmount(sumProDeliv);
   }, [sumProDeliv]);
