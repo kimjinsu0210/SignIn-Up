@@ -37,7 +37,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/validators/payment";
 import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
-import { CheckoutPage } from "../sandbox/Checkout";
+import { CheckoutPage } from "../../components/Checkout";
 
 const PaymentForm = () => {
   const router = useRouter();
