@@ -3,11 +3,11 @@ import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk";
 
 const generateRandomString = () => window.btoa(Math.random()).slice(0, 20);
 
-export function CheckoutPage() {
+export function CheckoutPage(value) {
   const paymentWidgetRef = useRef(null);
   const paymentMethodsWidgetRef = useRef(null);
   const agreementWidgetRef = useRef(null);
-  const [price, setPrice] = useState(1000);
+  const [price, setPrice] = useState(value.totalAmount);
 
   useEffect(() => {
     (async () => {

@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { auth, db } from "../api/firebaseSDK";
 import { useRouter } from "next/router";
 import { collection, getDocs } from "firebase/firestore";
 import { ProductType } from "@/types/type";
 import Image from "next/image";
+import { auth, db } from "@/pages/api/firebaseSDK";
 
 const ProductCard = () => {
   const router = useRouter();

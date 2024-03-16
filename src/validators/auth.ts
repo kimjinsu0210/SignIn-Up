@@ -24,7 +24,7 @@ export const registerSchema = z.object({
   birthYear: z.string().min(1, { message: "년을 선택해주세요" }),
   birthMonth: z.string().min(1, { message: "월을 선택해주세요" }),
   birthDay: z.string().min(1, { message: "일을 선택해주세요" }),
-  detailAddr: z.string().min(1, { message: "상세주소를 입력해 주세요." }),
+  address: z.string().min(1, { message: "상세주소를 입력해 주세요." }),
   password: z
     .string()
     .min(6, "비밀번호는 최소 6자리 이상이어야 합니다.")

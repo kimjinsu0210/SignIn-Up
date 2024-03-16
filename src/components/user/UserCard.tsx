@@ -8,11 +8,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Layout } from "@/components/layout/Layout";
-import { auth, db } from "../api/firebaseSDK";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import { collection, getDocs } from "firebase/firestore";
 import { UserType } from "@/types/type";
+import { auth, db } from "@/pages/api/firebaseSDK";
 
 const UserCard = () => {
   const router = useRouter();
