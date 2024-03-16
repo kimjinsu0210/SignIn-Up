@@ -19,11 +19,11 @@ import { registerSchema } from "@/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { FirstStep, LastStep, StepButton } from "./index";
 import { addCoupon, addUserInDB } from "@/pages/api/auth";
 import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../api/firebaseSDK";
+import { FirstStep, LastStep, StepButton } from "@/components/signup";
 
 type RegisterType = z.infer<typeof registerSchema>;
 

@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { CheckoutPage } from "@/components/toss/Checkout";
-import { SuccessPage } from "@/components/toss/Success";
-import { FailPage } from "@/components/toss/Fail";
+import { CheckoutPage, FailPage, SuccessPage } from "@/components/toss";
 
 export default function Home() {
   const router = useRouter();
