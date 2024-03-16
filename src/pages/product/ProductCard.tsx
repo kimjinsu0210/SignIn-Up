@@ -14,7 +14,7 @@ const ProductCard = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/");
-      else fetchData();
+      fetchData();
     });
   }, [router]);
 

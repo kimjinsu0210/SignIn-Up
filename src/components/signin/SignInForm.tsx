@@ -28,7 +28,7 @@ const SignInForm = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) router.push("../../user/UserCard");
+      if (user) router.push("/user/UserCard");
     });
   }, [router]);
 
@@ -45,7 +45,7 @@ const SignInForm = () => {
         toast({
           title: "로그인이 완료되었습니다",
         });
-        router.push("/user/UserCard");
+        router.push("./user/UserCard");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -106,12 +106,11 @@ const SignInForm = () => {
               )}
             />
             <div className={"flex justify-between gap-2"}>
-              <Button type="submit" variant={"outline"}>
-                로그인
-              </Button>
+              <Button type="submit">로그인</Button>
               <Button
                 type="button"
-                onClick={() => router.push("/sign/signup/SignUpForm")}
+                variant={"outline"}
+                onClick={() => router.push("/signup/SignUpForm")}
               >
                 회원가입
               </Button>

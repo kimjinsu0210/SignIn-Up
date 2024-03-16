@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
-import { SignInForm } from "@/components/sign/signin";
+import { SignInForm } from "@/components/signin";
 
 export default function Home() {
   return (

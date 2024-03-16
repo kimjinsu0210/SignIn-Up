@@ -15,16 +15,15 @@ import { UserType } from "@/types/type";
 import { auth, db } from "@/pages/api/firebaseSDK";
 
 const UserCard = () => {
+  const loginEmail = auth.currentUser?.email;
   const router = useRouter();
   const [users, setUsers] = useState<UserType[]>([]);
-  const [loginEmail, setLoginEmail] = useState<string | null>("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push("/");
       } else {
-        setLoginEmail(user.email);
         fetchData();
       }
     });

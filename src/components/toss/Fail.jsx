@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useSearchParams } from "react-router-dom";
 
-export function FailPage() {
+const FailPage = () => {
   const [searchParams] = useSearchParams();
   const errorCode = searchParams.get("code");
   const errorMessage = searchParams.get("message");
@@ -62,4 +62,6 @@ export function FailPage() {
       </div>
     </div>
   );
-}
+};
+
+export default FailPage;
