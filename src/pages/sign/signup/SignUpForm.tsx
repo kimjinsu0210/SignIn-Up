@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
 
 import {
@@ -8,43 +7,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
+import { Form } from "@/components/ui/form";
 
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 
-import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "@/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/router";
-import { auth, db } from "../api/firebaseSDK";
+import { auth, db } from "../../api/firebaseSDK";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
-import { UserType, addrType } from "@/types/type";
-import SignUpFirstStep from "./SignUpFirstStep";
+import { UserType } from "@/types/type";
+import { FirstStep, LastStep, StepButton } from "./index";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
 const SignUpForm = () => {
   const [step, setStep] = useState<number>(0);
   const [kakaoAddr, setKakaoAddr] = useState<string>("");
-  // const [postCode, setPostCode] = useState<string>("");
   const { toast } = useToast();
   const router = useRouter();
 
@@ -58,7 +47,7 @@ const SignUpForm = () => {
 
     // 로그인 상태일 때 router
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) router.push("../user/UserCard");
+      if (user) router.push("../../user/UserCard");
     });
 
     // Cleanup 함수
@@ -150,46 +139,6 @@ const SignUpForm = () => {
         }
       });
   };
-  // 다음 단계 핸들러
-  const nextStepHandler = async () => {
-    // 카카오 주소 유효성 검사
-    if (kakaoAddr === "") {
-      toast({
-        title: "주소를 선택해 주세요",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const userData: (keyof UserType)[] = [
-      "phone",
-      "email",
-      "username",
-      "role",
-      "gender",
-      "birthYear",
-      "birthMonth",
-      "birthDay",
-      "detailAddr",
-    ];
-
-    await form.trigger(userData);
-    // 카카오 주소와 비밀번호를 제외한 form 데이터 유효성 검사
-    for (const field of userData) {
-      const fieldState = form.getFieldState(field);
-      if (!fieldState.isDirty || fieldState.invalid) return;
-    }
-
-    setStep(1);
-  };
-
-  const pasteHandler = (event: React.ClipboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    toast({
-      title: "붙여넣기를 할 수 없습니다.",
-      variant: "destructive",
-    });
-  };
 
   return (
     <Layout>
@@ -205,82 +154,21 @@ const SignUpForm = () => {
               className="relative overflow-x-hidden w-full"
             >
               {/* 첫번째 Step */}
-              <SignUpFirstStep
+              <FirstStep
                 form={form}
+                step={step}
                 kakaoAddr={kakaoAddr}
                 setKakaoAddr={setKakaoAddr}
-                step={step}
               />
-              <motion.div
-                className={cn("absolute top-0 left-0 right-0")}
-                animate={{ translateX: `${(1 - step) * 100}%` }}
-                style={{ translateX: `${(1 - step) * 100}%` }}
-                transition={{
-                  ease: "easeInOut",
-                }}
-              >
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>비밀번호</FormLabel>
-                      <FormControl>
-                        <Input type={"password"} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>비밀번호 확인</FormLabel>
-                      <FormControl>
-                        <Input
-                          type={"password"}
-                          {...field}
-                          onPaste={(event) => pasteHandler(event)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
-              <div className={"flex justify-between gap-2 pt-5"}>
-                <Button
-                  type="button"
-                  className={cn({ hidden: step === 1 })}
-                  onClick={nextStepHandler}
-                >
-                  다음 단계로
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-                <Button
-                  className={cn({ hidden: step === 1 })}
-                  type="button"
-                  variant={"outline"}
-                  onClick={() => router.push("/")}
-                >
-                  로그인 페이지로
-                </Button>
-                <Button className={cn({ hidden: step === 0 })} type="submit">
-                  계정 등록하기
-                </Button>
-                <Button
-                  type="button"
-                  variant={"outline"}
-                  className={cn({ hidden: step === 0 })}
-                  onClick={() => {
-                    setStep(0);
-                  }}
-                >
-                  이전 단계로
-                </Button>
-              </div>
+              {/* 마지막 Step */}
+              <LastStep form={form} step={step} />
+              {/* Step 버튼 */}
+              <StepButton
+                form={form}
+                step={step}
+                kakaoAddr={kakaoAddr}
+                setStep={setStep}
+              />
             </form>
           </Form>
         </CardContent>

@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { auth } from "../api/firebaseSDK";
+import { auth } from "../../api/firebaseSDK";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
@@ -28,7 +28,7 @@ const SignInForm = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) router.push("/user/UserCard");
+      if (user) router.push("../../user/UserCard");
     });
   }, [router]);
 
@@ -111,7 +111,7 @@ const SignInForm = () => {
               </Button>
               <Button
                 type="button"
-                onClick={() => router.push("/sign/SignUpForm")}
+                onClick={() => router.push("/sign/signup/SignUpForm")}
               >
                 회원가입
               </Button>

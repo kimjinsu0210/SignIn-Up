@@ -25,19 +25,14 @@ import { cn } from "@/lib/utils";
 
 type RegisterType = z.infer<typeof registerSchema>;
 
-interface SignUpFirstStepProps {
+interface FirstStepProps {
   form: UseFormReturn<RegisterType>;
   step: number;
   kakaoAddr: string;
   setKakaoAddr: (addr: string) => void;
 }
 
-const SignUpFirstStep = ({
-  form,
-  kakaoAddr,
-  setKakaoAddr,
-  step,
-}: SignUpFirstStepProps) => {
+const FirstStep = ({ form, kakaoAddr, setKakaoAddr, step }: FirstStepProps) => {
   const [postCode, setPostCode] = useState<string>("");
 
   const kakaoAddrModal = () => {
@@ -290,4 +285,4 @@ const SignUpFirstStep = ({
   );
 };
 
-export default SignUpFirstStep;
+export default FirstStep;

@@ -13,7 +13,6 @@ export default function Home() {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      // Your custom logic for route change
       console.log("Route is changing to:", url);
     };
 
