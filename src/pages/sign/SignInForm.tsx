@@ -41,7 +41,7 @@ const SignInForm = () => {
 
   const onSubmit = (data: RegisterType) => {
     signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
+      .then(() => {
         toast({
           title: "로그인이 완료되었습니다",
         });
