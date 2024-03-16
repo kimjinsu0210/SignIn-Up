@@ -31,7 +31,7 @@
     "src/components/payment/payments.controller.js",
     "src/components/payment/PaymentForm.tsx",
     "src/pages/sandbox/index.js",
-    "src/components/toss/Checkout.jsx",
+    "src/components/payment/toss/Checkout.jsx",
     "src/components/payment/sandbox/Payment.jsx",
     "src/components/payment/sandbox/Success.jsx",
     "src/components/payment/sandbox/server.js",

@@ -1,12 +1,8 @@
-// pages/index.js
-
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { CheckoutPage } from "@/components/toss/Checkout";
-import { SuccessPage } from "@/components/toss/Success";
-import { FailPage } from "@/components/toss/Fail";
-
-// Import your page components here
+import { SuccessPage } from "@/components/payment/toss/Success";
+import { FailPage } from "@/components/payment/toss/Fail";
 
 export default function Home() {
   const router = useRouter();
@@ -25,7 +21,6 @@ export default function Home() {
 
   return (
     <div>
-      {/* Render your page components based on the route */}
       {router.pathname === "/sandbox/" && <CheckoutPage />}
       {router.pathname === "/sandbox/success" && <SuccessPage />}
       {router.pathname === "/sandbox/fail" && <FailPage />}
