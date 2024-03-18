@@ -20,7 +20,6 @@ const Header = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   const [loginState, setLoginState] = useState<boolean>(false);
-  console.log("loginState :", loginState);
   const { setTheme, resolvedTheme } = useTheme();
   const router = useRouter();
 

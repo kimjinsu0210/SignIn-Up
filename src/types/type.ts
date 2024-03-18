@@ -21,6 +21,7 @@ export interface UserType {
   birthDay: string;
   gender: string;
   address: string;
+  adminCode: string;
 }
 
 export interface ProductType {
