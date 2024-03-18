@@ -55,13 +55,13 @@ const Header = ({
           <>
             <Button
               onClick={() => router.push("../product/ProductCard")}
-              variant="ghost"
+              variant="outline"
             >
               상품페이지
             </Button>
             <Button
               onClick={() => router.push("../user/UserCard")}
-              variant="ghost"
+              variant="outline"
             >
               유저페이지
             </Button>
