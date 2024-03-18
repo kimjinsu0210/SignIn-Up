@@ -20,7 +20,6 @@ const Header = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   const [loginState, setLoginState] = useState<boolean>(false);
-  console.log("loginState :", loginState);
   const { setTheme, resolvedTheme } = useTheme();
   const router = useRouter();
 
@@ -55,15 +54,15 @@ const Header = ({
           <>
             <Button
               onClick={() => router.push("../product/ProductCard")}
-              variant="ghost"
+              variant="outline"
             >
               상품페이지
             </Button>
             <Button
               onClick={() => router.push("../user/UserCard")}
-              variant="ghost"
+              variant="outline"
             >
-              유저페이지
+              유저카드
             </Button>
             <Button
               onClick={async () => {

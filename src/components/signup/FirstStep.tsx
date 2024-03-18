@@ -263,7 +263,7 @@ const FirstStep = ({ form, kakaoAddr, setKakaoAddr, step }: FirstStepProps) => {
           control={form.control}
           name="role"
           render={({ field }) => (
-            <FormItem className="w-[200px]">
+            <FormItem>
               <FormLabel>역할</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -280,6 +280,20 @@ const FirstStep = ({ form, kakaoAddr, setKakaoAddr, step }: FirstStepProps) => {
             </FormItem>
           )}
         />
+        {form.watch("role") === "admin" && (
+          <FormField
+            control={form.control}
+            name="adminCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="관리자 코드 입력" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </motion.div>
   );

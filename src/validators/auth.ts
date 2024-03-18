@@ -41,4 +41,11 @@ export const registerSchema = z.object({
       (value) => passwordRegex.test(value),
       "비밀번호는 최소 6자리 이상, 영문, 숫자, 특수문자를 포함해야 합니다."
     ),
+  adminCode: z
+    .string()
+    .min(1, { message: "관리자 코드를 입력해주세요" })
+    .refine(
+      (value) => value === "admin1234",
+      "관리자 코드가 일치하지 않습니다."
+    ),
 });
