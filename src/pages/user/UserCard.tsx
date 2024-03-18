@@ -42,6 +42,11 @@ const UserCard = () => {
 
   return (
     <Layout>
+      <div className="flex justify-center">
+        <h1 className="font-bold text-lg">
+          로그인된 회원은 녹색으로 표시됩니다.
+        </h1>
+      </div>
       <Carousel className="w-full max-w-xs">
         <CarouselContent>
           {users.map((user, index) => (

@@ -63,7 +63,7 @@ const Header = ({
               onClick={() => router.push("../user/UserCard")}
               variant="outline"
             >
-              유저페이지
+              유저카드
             </Button>
             <Button
               onClick={async () => {
